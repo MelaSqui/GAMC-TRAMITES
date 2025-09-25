@@ -1,0 +1,21 @@
+/* src/index.css */
+@import "tailwindcss";
+
+/* Base */
+:root { color-scheme: light; }
+body { @apply bg-white text-slate-900 antialiased; }
+
+/* Helpers de layout */
+.container { @apply max-w-6xl mx-auto px-4; }
+
+/* UI helpers */
+.card { @apply rounded-2xl bg-white shadow-sm border border-slate-200; }
+.card-hover { @apply transition-shadow hover:shadow-md; }
+
+.btn { @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium border; }
+.btn-primary { @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700; }
+
+.badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs bg-slate-100 border border-slate-200; }
+
+.page-title { @apply text-2xl font-semibold tracking-tight; }
+.subtle { @apply text-slate-500; }
