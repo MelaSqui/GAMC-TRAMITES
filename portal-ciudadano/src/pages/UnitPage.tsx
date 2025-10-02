@@ -1,63 +1,99 @@
-import { useEffect, useState } from 'react';
-import { API } from '../lib/api';
-import type { Unit } from '../lib/types';
-import SearchInput from '../components/SearchInput';
-import UnitCard from '../components/UnitCard';
+// src/pages/UnitPage.tsx
+import { useEffect, useState } from "react";
+import Layout from "../components/Layout";
+import SearchInput from "../components/SearchInput";
+import Spinner from "../components/Spinner";
+import UnitCard from "../components/UnitCard";
+import UnitModal from "../components/UnitModal";
+import EmptyState from "../components/EmptyState";
+import API from "../lib/api";
+import type { Unit } from "../lib/types";
 
-export default function UnitPage() {
-  const [all, setAll] = useState<Unit[]>([]);
+export default function UnitsPage() {
+  const [q, setQ] = useState("");
   const [items, setItems] = useState<Unit[]>([]);
-  const [q, setQ] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
+  const [loadingUnit, setLoadingUnit] = useState(false);
 
   useEffect(() => {
+    let cancel = false;
     setLoading(true);
-    setErr(null);
-    API.listUnits()
-      .then((list) => {
-        const units = Array.isArray(list) ? list : [];
-        setAll(units);
-        setItems(units);
-      })
-      .catch((e: any) => setErr(String(e?.message ?? 'Error')))
-      .finally(() => setLoading(false));
-  }, []);
+    API.getUnits(q)
+      .then((data) => !cancel && setItems(data))
+      .catch((e) => !cancel && setError(e.message))
+      .finally(() => !cancel && setLoading(false));
+    return () => {
+      cancel = true;
+    };
+  }, [q]);
 
-  useEffect(() => {
-    const t = q.trim().toLowerCase();
-    if (!t) return setItems(all);
-    setItems(
-      all.filter(
-        (u) =>
-          u.name.toLowerCase().includes(t) ||
-          (u.code_prefix ?? '').toLowerCase().includes(t),
-      ),
-    );
-  }, [q, all]);
+  const handleUnitClick = async (unitId: number) => {
+    setLoadingUnit(true);
+    try {
+      const fullUnit = await API.getUnit(unitId);
+      setSelectedUnit(fullUnit);
+    } catch (e: any) {
+      console.error('Error cargando unidad:', e);
+    } finally {
+      setLoadingUnit(false);
+    }
+  };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-1">Unidades municipales</h1>
-      <p className="text-slate-600 mb-4">
-        Elige una unidad para ver los trámites disponibles.
-      </p>
-
-      <div className="mb-5">
-        <SearchInput value={q} onChange={setQ} placeholder="Buscar..." />
+    <Layout>
+      <div className="mb-6">
+        <h1 className="page-title mb-2">Unidades municipales</h1>
+        <p className="text-muted">
+          Explora las diferentes unidades y sus trámites disponibles
+        </p>
       </div>
 
-      {loading && <p className="text-slate-500">Cargando…</p>}
-      {err && <p className="text-red-600">Error: {err}</p>}
-      {!loading && !err && items.length === 0 && (
-        <p className="text-slate-500">No hay unidades.</p>
+      <div className="mb-6">
+        <SearchInput value={q} onChange={setQ} placeholder="Buscar unidad..." />
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <Spinner size="lg" />
+        </div>
+      ) : error ? (
+        <div className="card">
+          <div className="card-content text-center py-8">
+            <div className="text-red-600 mb-2">Error al cargar</div>
+            <p className="text-slate-600">{error}</p>
+          </div>
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          title="No se encontraron unidades"
+          subtitle={q ? "Intenta con otros términos de búsqueda" : "No hay unidades disponibles"}
+        />
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {items.map((u) => (
+            <UnitCard
+              key={u.id}
+              unit={u}
+              onClick={() => handleUnitClick(u.id)}
+            />
+          ))}
+        </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((u) => (
-          <UnitCard key={u.id} unit={u} />
-        ))}
-      </div>
-    </div>
+      {loadingUnit && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <Spinner size="lg" />
+        </div>
+      )}
+
+      {selectedUnit && (
+        <UnitModal
+          unit={selectedUnit}
+          onClose={() => setSelectedUnit(null)}
+        />
+      )}
+    </Layout>
   );
 }

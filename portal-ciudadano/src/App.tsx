@@ -1,19 +1,22 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import UnitPage from './pages/UnitPage';
+// src/App.tsx
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import UnitsPage from './pages/UnitPage';
 import UnitTramitesPage from './pages/UnitTramitesPage';
-import TramiteDetailPage from './pages/TramiteDetailPage';
+import TramiteDetailPage from './pages/TramiteDetailPage'; // el que ya tienes
+
+import "./index.css"; // Asegúrate de importar los estilos globales si es necesario
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<UnitPage />} />
-          <Route path="/units/:id" element={<UnitTramitesPage />} />
-          <Route path="/tramites/:id" element={<TramiteDetailPage />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/" element={<Navigate to="/units" replace />} />
+        <Route path="/units" element={<UnitsPage />} />
+        <Route path="/units/:id" element={<UnitTramitesPage />} />
+        <Route path="/tramites/:id" element={<TramiteDetailPage />} />
+        <Route path="*" element={<Navigate to="/units" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }
+

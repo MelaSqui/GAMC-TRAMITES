@@ -1,57 +1,121 @@
 // src/pages/UnitTramitesPage.tsx
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { API } from '../lib/api';
-import type { Tramite, Unit } from '../lib/types';
-import SearchInput from '../components/SearchInput';
-import TramiteCard from '../components/TramiteCard';
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import Layout from "../components/Layout";
+import Breadcrumbs from "../components/Breadcrumbs";
+import SearchInput from "../components/SearchInput";
+import Spinner from "../components/Spinner";
+import TramiteCard from "../components/TramiteCard";
+import EmptyState from "../components/EmptyState";
+import API from "../lib/api";
+import type { Tramite, Unit } from "../lib/types";
 
 export default function UnitTramitesPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const [q, setQ] = useState("");
   const [unit, setUnit] = useState<Unit | null>(null);
   const [items, setItems] = useState<Tramite[]>([]);
-  const [q, setQ] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
+    let cancel = false;
     setLoading(true);
-    Promise.all([API.getUnit(id), API.listTramitesByUnit(id, q ? { q } : undefined)])
-      .then(([u, { items }]) => {
-        setUnit(u?.data ?? u ?? null);
-        setItems(items ?? []);
+
+    API.listTramitesByUnit(id, q)
+      .then(({ unit, items }) => {
+        if (cancel) return;
+        setUnit(unit ?? null);
+        setItems(items);
+        setError(null);
       })
-      .catch((e) => setErr(e.message))
-      .finally(() => setLoading(false));
+      .catch((e) => !cancel && setError(e.message))
+      .finally(() => !cancel && setLoading(false));
+
+    return () => {
+      cancel = true;
+    };
   }, [id, q]);
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">
-          {unit?.name ?? 'Trámites'}
-        </h1>
-        {unit?.description ? (
-          <p className="text-slate-600">{unit.description}</p>
-        ) : null}
-      </header>
+    <Layout>
+      <Breadcrumbs
+        items={[
+          { label: "Inicio", to: "/units" },
+          { label: "Unidades", to: "/units" },
+          unit ? { label: unit.name } : { label: "..." },
+        ]}
+      />
 
-      <div className="mb-4">
-        <SearchInput value={q} onChange={setQ} placeholder="Buscar trámites..." />
-      </div>
-
-      {loading && <p className="text-slate-500">Cargando...</p>}
-      {err && <p className="text-red-600">Error: {err}</p>}
-      {!loading && !err && items.length === 0 && (
-        <p className="text-slate-500">No hay trámites.</p>
+      {/* Header de la unidad */}
+      {unit && (
+        <div className="card mb-6">
+          <div className="card-content">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-slate-900 mb-1">
+                  {unit.name}
+                </h1>
+                {unit.description && (
+                  <p className="text-slate-600 mb-3">{unit.description}</p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {unit.code_prefix && (
+                    <span className="badge badge-neutral">
+                      Código: {unit.code_prefix}
+                    </span>
+                  )}
+                  <span className="badge badge-info">
+                    {items.length} trámites
+                  </span>
+                </div>
+              </div>
+              <Link to="/units" className="btn btn-outline">
+                ← Volver
+              </Link>
+            </div>
+          </div>
+        </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((t) => (
-          <TramiteCard key={t.id} tramite={t} />
-        ))}
+      {/* Buscador */}
+      <div className="mb-6">
+        <SearchInput
+          value={q}
+          onChange={setQ}
+          placeholder="Buscar trámite..."
+        />
       </div>
-    </div>
+
+      {/* Contenido */}
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <Spinner size="lg" />
+        </div>
+      ) : error ? (
+        <div className="card">
+          <div className="card-content text-center py-8">
+            <div className="text-red-600 mb-2">❌ Error al cargar</div>
+            <p className="text-slate-600">{error}</p>
+          </div>
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          title="No se encontraron trámites"
+          subtitle={
+            q
+              ? "Intenta con otros términos de búsqueda"
+              : "Esta unidad aún no tiene trámites registrados"
+          }
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {items.map((t) => (
+            <TramiteCard key={t.id} t={t} />
+          ))}
+        </div>
+      )}
+    </Layout>
   );
 }

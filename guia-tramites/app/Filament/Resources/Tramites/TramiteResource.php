@@ -79,4 +79,6 @@ class TramiteResource extends Resource
 
         return $query;
     }
+
+    
 }

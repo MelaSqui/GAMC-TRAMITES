@@ -1,30 +1,58 @@
 // src/components/UnitCard.tsx
-import { Link } from 'react-router-dom';
-import type { Unit } from '../lib/types';
+import type { Unit } from "../lib/types";
 
-type Props = { unit: Unit };
+export default function UnitCard({ 
+  unit, 
+  onClick 
+}: { 
+  unit: Unit; 
+  onClick: () => void;
+}) {
+  const colors = [
+    'from-blue-500 to-blue-600',
+    'from-purple-500 to-purple-600',
+    'from-green-500 to-green-600',
+    'from-orange-500 to-orange-600',
+    'from-pink-500 to-pink-600',
+    'from-indigo-500 to-indigo-600',
+  ];
+  const colorClass = colors[unit.id % colors.length];
 
-export default function UnitCard({ unit }: Props) {
+  const initials = unit.name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
-    <Link
-      to={`/units/${unit.id}`}
-      className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition"
+    <button
+      onClick={onClick}
+      className="block group w-full text-left"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-slate-800">
-            {unit.name}
-            {unit.code_prefix ? <span className="ml-2 text-slate-400 text-sm">({unit.code_prefix})</span> : null}
-          </h3>
-          {unit.description ? (
-            <p className="mt-1 text-sm text-slate-600 line-clamp-2">{unit.description}</p>
-          ) : null}
+      <div className="card hover:shadow-lg transition-all duration-200 overflow-hidden">
+        <div className="relative h-40 overflow-hidden">
+          {unit.cover_url ? (
+            <img
+              src={unit.cover_url}
+              alt={unit.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br ${colorClass} flex items-center justify-center`}>
+              <span className="text-5xl font-bold text-white/90">
+                {initials}
+              </span>
+            </div>
+          )}
         </div>
 
-        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">
-          {unit.tramites_count ?? 0} trámites
-        </span>
+        <div className="p-5">
+          <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-600 transition-colors text-center">
+            {unit.name}
+          </h3>
+        </div>
       </div>
-    </Link>
+    </button>
   );
 }

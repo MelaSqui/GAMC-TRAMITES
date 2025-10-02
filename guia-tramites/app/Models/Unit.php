@@ -11,10 +11,14 @@ class Unit extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'code_prefix',   // ej.: 'ZN'
-        'description',
+     protected $fillable = [
+        'name', 'code_prefix', 'description',
+        'level', 'contact_name', 'address',
+        'phones', 'internal_phone', 'website_url', 'cover_url',
+    ];
+
+    protected $casts = [
+        'phones' => 'array',
     ];
 
     /** Trámites de la unidad */
@@ -28,4 +32,18 @@ class Unit extends Model
     {
         return $this->belongsToMany(User::class, 'user_unit');
     }
+
+    protected static function boot()
+{
+    parent::boot();
+    
+    static::saving(function ($unit) {
+        \Log::info('Guardando unidad:', $unit->toArray());
+        \Log::info('Datos sucios:', $unit->getDirty());
+    });
+    
+    static::saved(function ($unit) {
+        \Log::info('Unidad guardada:', $unit->fresh()->toArray());
+    });
+}
 }

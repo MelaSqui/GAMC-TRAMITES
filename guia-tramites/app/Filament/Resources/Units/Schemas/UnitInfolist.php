@@ -3,26 +3,38 @@
 namespace App\Filament\Resources\Units\Schemas;
 
 use Filament\Schemas\Schema;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\ImageEntry;
+use Filament\Schemas\Components\TextEntry;
 
 class UnitInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema->schema([
-            TextEntry::make('name')
-                ->label('Nombre'),
+        return $schema
+            ->schema([
+                ImageEntry::make('cover_url')
+                    ->label('Portada')
+                    ->disk('public')
+                    ->columnSpanFull(),
 
-            TextEntry::make('code_prefix')
-                ->label('Prefijo')
-                ->badge(),
+                TextEntry::make('name')->label('Nombre'),
+                TextEntry::make('code_prefix')->label('Prefijo'),
 
-            TextEntry::make('description')
-                ->label('Descripción'),
+                TextEntry::make('level')->label('Nivel'),
+                TextEntry::make('contact_name')->label('Contacto'),
 
-            TextEntry::make('tramites_count')
-                ->label('Trámites')
-                ->numeric(),
-        ]);
+                TextEntry::make('phones')
+                    ->label('Teléfonos')
+                    ->formatState(fn ($state) => is_array($state) ? implode(', ', $state) : ($state ?? '')),
+
+                TextEntry::make('internal_phone')->label('Interno'),
+                TextEntry::make('website_url')->label('Página web'),
+
+                TextEntry::make('address')->label('Dirección')->columnSpanFull(),
+                TextEntry::make('description')->label('Descripción')->columnSpanFull(),
+
+                TextEntry::make('tramites_count')->label('Trámites'),
+            ])
+            ->columns(2);
     }
 }
