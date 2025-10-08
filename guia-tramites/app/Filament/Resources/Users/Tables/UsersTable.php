@@ -16,11 +16,25 @@ class UsersTable
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Nombre')->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('Email')->searchable(),
-                Tables\Columns\TextColumn::make('role')->label('Rol')->badge()->sortable(),
-                Tables\Columns\IconColumn::make('is_active')->label('Activo')->boolean(),
-                Tables\Columns\TextColumn::make('created_at')->since()->sortable(),
+                Tables\Columns\TextColumn::make('carnet')
+                    ->label('Carnet')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Creado')
+                    ->since()
+                    ->sortable(),
             ])
             ->filters([
                 //
