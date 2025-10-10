@@ -3,84 +3,69 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TramiteResource;
-use App\Http\Resources\UnitResource;
 use App\Models\Tramite;
-use App\Models\Unit;
 use Illuminate\Http\Request;
 
 class TramiteController extends Controller
 {
-    // Listado por unidad (endpoint que usa el frontend)
-    public function byUnit(Unit $unit, Request $request)
-    {
-        $q = trim((string) $request->query('q', ''));
-
-        $query = Tramite::query()
-            ->where('unit_id', $unit->id)
-            ->where('is_active', true)
-            ->select('id', 'unit_id', 'code', 'title', 'description', 'estimated_time', 'cost');
-
-        if ($q !== '') {
-            $like = "%{$q}%";
-            $query->where(function ($sub) use ($like) {
-                $sub->where('title', 'ILIKE', $like)
-                    ->orWhere('description', 'ILIKE', $like)
-                    ->orWhere('code', 'ILIKE', $like);
-                    // Si quieres buscar en JSON, descomenta:
-                    // ->orWhereRaw('"requirements"::text ILIKE ?', [$like])
-                    // ->orWhereRaw('"steps"::text ILIKE ?', [$like]);
-            });
-        }
-
-        $tramites = $query->orderBy('title')->get();
-
-        // Respuesta que espera el frontend: { unit: {...}, items: [...] }
-        return response()->json([
-            'unit'  => UnitResource::make($unit)->resolve(),
-            'items' => TramiteResource::collection($tramites)->resolve(),
-        ]);
-    }
-
-    // Detalle de trámite
-    public function show(Tramite $tramite)
-    {
-        $tramite->loadMissing([
-            'unit:id,name,code_prefix',
-            'normativas:id,title,link,issued_date',
-        ]);
-
-        return TramiteResource::make($tramite);
-    }
-
-    // (Opcional) Listado general con filtros ?unit_id=&q=
+    /**
+     * GET /api/v1/public/tramites?q=&unit=
+     */
     public function index(Request $request)
     {
-        $q      = trim((string) $request->query('q', ''));
-        $unitId = $request->integer('unit_id');
+        $q = trim((string) $request->query('q', ''));
+        $unitId = $request->query('unit');
 
-        $query = Tramite::query()
-            ->with(['unit:id,name,code_prefix'])
-            ->where('is_active', true);
+        $tramites = Tramite::query()
+            ->when($unitId, fn($query) => $query->where('unit_id', $unitId))
+            ->where('is_active', true)
+            ->when($q !== '', fn($query) => $query->search($q))
+            ->orderBy('title')
+            ->get([
+                'id',
+                'unit_id',
+                'code',
+                'title',
+                'description',
+                'requirements_html',
+                'steps_html',
+                'normativas_html',
+                'keywords',
+                'estimated_time',
+                'cost',
+                'is_active',
+                'created_at',
+                'updated_at',
+            ]);
 
-        if ($unitId) {
-            $query->where('unit_id', $unitId);
-        }
+        return response()->json(['data' => $tramites]);
+    }
 
-        if ($q !== '') {
-            $like = "%{$q}%";
-            $query->where(function ($sub) use ($like) {
-                $sub->where('title', 'ILIKE', $like)
-                    ->orWhere('description', 'ILIKE', $like)
-                    ->orWhereRaw('"requirements"::text ILIKE ?', [$like])
-                    ->orWhereRaw('"steps"::text ILIKE ?', [$like]);
-            });
-        }
-
-        $tramites = $query->orderBy('title')->get();
+    /**
+     * GET /api/v1/public/tramites/{id}
+     */
+    public function show(Tramite $tramite)
+    {
+        $unit = $tramite->unit()->select('id', 'name', 'code_prefix')->first();
 
         return response()->json([
-            'items' => TramiteResource::collection($tramites)->resolve(),
+            'data' => [
+                'id' => $tramite->id,
+                'unit_id' => $tramite->unit_id,
+                'code' => $tramite->code,
+                'title' => $tramite->title,
+                'description' => $tramite->description,
+                'requirements_html' => $tramite->requirements_html,
+                'steps_html' => $tramite->steps_html,
+                'normativas_html' => $tramite->normativas_html,
+                'keywords' => $tramite->keywords,
+                'estimated_time' => $tramite->estimated_time,
+                'cost' => $tramite->cost,
+                'is_active' => (bool) $tramite->is_active,
+                'created_at' => $tramite->created_at,
+                'updated_at' => $tramite->updated_at,
+                'unit' => $unit,
+            ]
         ]);
     }
 }
