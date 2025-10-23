@@ -28,15 +28,51 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+
+            // 👇 Un único logo para topbar y también para el login (Filament v4)
+            ->brandLogo(asset('images/Logo_cocha.png'))
+            // (opcional) ajusta el alto si se ve muy grande/pequeño
+            ->brandLogoHeight('3rem')
+            // (opcional) si no quieres texto al lado del logo:
+            ->brandName('')
+
+            // 🎨 Paleta institucional (morado/turquesa)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => [
+                    50  => '#F3ECFA',
+                    100 => '#E3D2F3',
+                    200 => '#C7A5E7',
+                    300 => '#AB78DB',
+                    400 => '#8F4BCF',
+                    500 => '#6E55A4', // morado principal
+                    600 => '#5A4587',
+                    700 => '#46356B',
+                    800 => '#32244F',
+                    900 => '#1E1433',
+                ],
+                'secondary' => [
+                    50  => '#E0F6FB',
+                    100 => '#B3EAF6',
+                    200 => '#80DDF2',
+                    300 => '#4DD0ED',
+                    400 => '#1AC3E8',
+                    500 => '#47B4D8', // turquesa principal
+                    600 => '#3BA0C2',
+                    700 => '#2E8CAA',
+                    800 => '#217894',
+                    900 => '#15647D',
+                ],
+                'success' => '#50C878',
+                'warning' => '#FFD200',
+                'danger'  => '#C8102E',
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,

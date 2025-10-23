@@ -1,121 +1,84 @@
-// src/pages/UnitTramitesPage.tsx
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import Layout from "../components/Layout";
-import Breadcrumbs from "../components/Breadcrumbs";
-import SearchInput from "../components/SearchInput";
-import Spinner from "../components/Spinner";
-import TramiteCard from "../components/TramiteCard";
-import EmptyState from "../components/EmptyState";
-import API from "../lib/api";
-import type { Tramite, Unit } from "../lib/types";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { listTramitesByUnit } from '../lib/api';
+import type { Tramite, Unit } from '../lib/types';
+import TramiteCard from '../components/TramiteCard';
 
 export default function UnitTramitesPage() {
   const { id } = useParams<{ id: string }>();
-  const [q, setQ] = useState("");
-  const [unit, setUnit] = useState<Unit | null>(null);
-  const [items, setItems] = useState<Tramite[]>([]);
+  const unitId = id ?? '';
+
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [unit, setUnit] = useState<Unit | undefined>(undefined);
+  const [tramites, setTramites] = useState<Tramite[]>([]);
+  const [q, setQ] = useState('');
 
   useEffect(() => {
-    if (!id) return;
-    let cancel = false;
-    setLoading(true);
-
-    API.listTramitesByUnit(id, q)
-      .then(({ unit, items }) => {
-        if (cancel) return;
-        setUnit(unit ?? null);
-        setItems(items);
-        setError(null);
-      })
-      .catch((e) => !cancel && setError(e.message))
-      .finally(() => !cancel && setLoading(false));
-
+    let mounted = true;
+    (async () => {
+      if (!unitId) return;
+      setLoading(true);
+      try {
+        const { unit, items } = await listTramitesByUnit(unitId, q);
+        if (!mounted) return;
+        setUnit(unit);
+        setTramites(items);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
     return () => {
-      cancel = true;
+      mounted = false;
     };
-  }, [id, q]);
+  }, [unitId, q]);
 
   return (
-    <Layout>
-      <Breadcrumbs
-        items={[
-          { label: "Inicio", to: "/units" },
-          { label: "Unidades", to: "/units" },
-          unit ? { label: unit.name } : { label: "..." },
-        ]}
-      />
+    <div className="min-h-screen">
+      <div className="bg-primary-600/10 border-b border-primary-100">
+        <div className="container py-8">
+          <h1 className="text-2xl font-semibold text-text-900">
+            {unit ? `Trámites de ${unit.name}` : 'Trámites de la unidad'}
+          </h1>
+          {unit?.description ? (
+            <p className="text-text-600 mt-1">
+              {unit.description.length > 160
+                ? unit.description.slice(0, 160) + '…'
+                : unit.description}
+            </p>
+          ) : null}
 
-      {/* Header de la unidad */}
-      {unit && (
-        <div className="card mb-6">
-          <div className="card-content">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-slate-900 mb-1">
-                  {unit.name}
-                </h1>
-                {unit.description && (
-                  <p className="text-slate-600 mb-3">{unit.description}</p>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  {unit.code_prefix && (
-                    <span className="badge badge-neutral">
-                      Código: {unit.code_prefix}
-                    </span>
-                  )}
-                  <span className="badge badge-info">
-                    {items.length} trámites
-                  </span>
-                </div>
-              </div>
-              <Link to="/units" className="btn btn-outline">
-                ← Volver
-              </Link>
-            </div>
+          <div className="mt-4">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar trámites de esta unidad…"
+              className="w-full md:w-1/2 rounded-xl border border-slate-300 px-4 py-2 outline-none focus:ring-2 focus:ring-primary-300"
+            />
           </div>
         </div>
-      )}
-
-      {/* Buscador */}
-      <div className="mb-6">
-        <SearchInput
-          value={q}
-          onChange={setQ}
-          placeholder="Buscar trámite..."
-        />
       </div>
 
-      {/* Contenido */}
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner size="lg" />
-        </div>
-      ) : error ? (
-        <div className="card">
-          <div className="card-content text-center py-8">
-            <div className="text-red-600 mb-2">❌ Error al cargar</div>
-            <p className="text-slate-600">{error}</p>
+      <section className="container">
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="card h-44 animate-pulse" />
+            ))}
           </div>
-        </div>
-      ) : items.length === 0 ? (
-        <EmptyState
-          title="No se encontraron trámites"
-          subtitle={
-            q
-              ? "Intenta con otros términos de búsqueda"
-              : "Esta unidad aún no tiene trámites registrados"
-          }
-        />
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {items.map((t) => (
-            <TramiteCard key={t.id} t={t} />
-          ))}
-        </div>
-      )}
-    </Layout>
+        ) : tramites.length === 0 ? (
+          <div className="card">
+            <p className="text-text-600">
+              No se encontraron trámites para esta unidad {q ? 'con este criterio' : ''}.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {tramites.map((t) => (
+              <TramiteCard key={t.id} tramite={t} />
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

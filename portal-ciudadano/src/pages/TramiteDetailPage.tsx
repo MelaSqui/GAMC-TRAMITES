@@ -1,174 +1,133 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import Layout from "../components/Layout";
-import Breadcrumbs from "../components/Breadcrumbs";
-import Spinner from "../components/Spinner";
-import API  from "../lib/api";
-import type { Tramite } from "../lib/types";
+// src/pages/TramiteDetailPage.tsx
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import API from '../lib/api';
+import type { Tramite } from '../lib/types';
 
 export default function TramiteDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const [t, setT] = useState<Tramite | null>(null);
+  const [data, setData] = useState<Tramite | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    let mounted = true;
     setLoading(true);
-    API.getTramite(id)
-      .then((data) => setT(data))
-      .catch((e) => setError(e.message))
+    setErr(null);
+
+    API.getTramite(id!)
+      .then((t) => {
+        if (mounted) setData(t);
+      })
+      .catch((e) => setErr(e?.message ?? 'Error'))
       .finally(() => setLoading(false));
+
+    return () => { mounted = false; };
   }, [id]);
 
+  if (loading) return <div className="container mx-auto p-6">Cargando…</div>;
+  if (err) return <div className="container mx-auto p-6 text-red-600">{err}</div>;
+  if (!data) return <div className="container mx-auto p-6">Sin datos.</div>;
+
   const costo =
-    t?.cost == null ? "No especificado" : t.cost === 0 ? "Gratuito" : `Bs. ${t.cost}`;
+    data.cost === null ||
+    data.cost === undefined ||
+    (typeof data.cost === 'string' && data.cost === '')
+      ? '—'
+      : (typeof data.cost === 'string' ? data.cost : Number(data.cost).toFixed(2));
+
+  const keywords = (data.keywords ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   return (
-    <Layout>
-      <Breadcrumbs
-        items={[
-          { label: "Inicio", to: "/" },
-          { label: "Unidades", to: "/" },
-          t?.unit ? { label: t.unit.name, to: `/units/${t.unit.id}` } : { label: "Unidad" },
-          { label: "Trámite" },
-        ]}
-      />
+    <div className="container mx-auto max-w-5xl p-6 space-y-8">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{data.title}</h1>
+          {data.code ? (
+            <p className="text-sm text-gray-500 mt-1">Código: {data.code}</p>
+          ) : null}
+        </div>
+        <Link
+          to={`/units/${data.unit_id}`}
+          className="inline-flex items-center rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50"
+        >
+          ← Volver a la unidad
+        </Link>
+      </div>
 
-      {/* Top pills + botón */}
-      <div className="card mb-6">
-        <div className="card-content flex items-center justify-between flex-wrap gap-3">
-          <div className="flex gap-3 flex-wrap">
-            <span className="badge badge-info">⏱️ Tiempo: {t?.estimated_time ?? "No especificado"}</span>
-            <span className="badge badge-success">💰 Costo: {costo}</span>
-          </div>
-          <Link to="/" className="btn btn-primary">🏠 Inicio</Link>
+      {data.description ? (
+        <p className="text-gray-700 leading-relaxed">{data.description}</p>
+      ) : null}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="rounded-lg border p-4">
+          <p className="text-sm text-gray-500">Tiempo estimado</p>
+          <p className="font-medium">{data.estimated_time || '—'}</p>
+        </div>
+        <div className="rounded-lg border p-4">
+          <p className="text-sm text-gray-500">Costo</p>
+          <p className="font-medium">{costo === '—' ? '—' : `Bs ${costo}`}</p>
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-16"><Spinner size="lg" /></div>
-      ) : error ? (
-        <div className="text-red-600">Error: {error}</div>
-      ) : !t ? (
-        <div className="text-slate-500">Trámite no encontrado.</div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Principal */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="card">
-              <div className="card-header">
-                <h2 className="section-title">Descripción</h2>
-              </div>
-              <div className="card-content">
-                {t.description ? (
-                  <p className="text-slate-700 leading-relaxed">{t.description}</p>
-                ) : (
-                  <p className="text-slate-500">Sin descripción.</p>
-                )}
-              </div>
-            </div>
+      {/* Requisitos */}
+      <section className="space-y-2">
+        <h2 className="text-lg font-semibold">Requisitos</h2>
+        {data.requirements_html ? (
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: data.requirements_html }}
+          />
+        ) : (
+          <p className="text-gray-500">Sin requisitos definidos.</p>
+        )}
+      </section>
 
-            <div className="card">
-              <div className="card-header">
-                <h2 className="section-title">Requisitos</h2>
-              </div>
-              <div className="card-content">
-                {t.requirements?.length ? (
-                  <ul className="space-y-3">
-                    {t.requirements.map((r, i) => (
-                      <li key={i} className="flex gap-3">
-                        <span className="badge badge-neutral">{i + 1}</span>
-                        <div>
-                          <div className="font-medium">{r.item}</div>
-                          {r.detalle && <div className="text-sm text-slate-600">{r.detalle}</div>}
-                          {r.link && (
-                            <a className="text-sm text-blue-700 underline" href={r.link} target="_blank" rel="noreferrer">
-                              Ver enlace
-                            </a>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-slate-500">No hay requisitos registrados.</p>
-                )}
-              </div>
-            </div>
+      {/* Pasos */}
+      <section className="space-y-2">
+        <h2 className="text-lg font-semibold">Pasos</h2>
+        {data.steps_html ? (
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: data.steps_html }}
+          />
+        ) : (
+          <p className="text-gray-500">Sin pasos definidos.</p>
+        )}
+      </section>
 
-            <div className="card">
-              <div className="card-header">
-                <h2 className="section-title">Procedimiento paso a paso</h2>
-              </div>
-              <div className="card-content">
-                {t.steps?.length ? (
-                  <ol className="space-y-4">
-                    {t.steps.map((s, i) => (
-                      <li key={i} className="flex gap-3">
-                        <span className="badge badge-info">{s.paso}</span>
-                        <div>
-                          <div className="font-medium">{s.detalle}</div>
-                          {s.link && (
-                            <a className="text-sm text-blue-700 underline" href={s.link} target="_blank" rel="noreferrer">
-                              Ver más información
-                            </a>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <p className="text-slate-500">No hay pasos registrados.</p>
-                )}
-              </div>
-            </div>
+      {/* Normativas */}
+      <section className="space-y-2">
+        <h2 className="text-lg font-semibold">Normativas</h2>
+        {data.normativas_html ? (
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: data.normativas_html }}
+          />
+        ) : (
+          <p className="text-gray-500">Sin normativas vinculadas.</p>
+        )}
+      </section>
+
+      {/* Palabras clave */}
+      {keywords.length ? (
+        <section className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-600">Palabras clave</h3>
+          <div className="flex flex-wrap gap-2">
+            {keywords.map((k) => (
+              <span
+                key={k}
+                className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs text-gray-700"
+              >
+                {k}
+              </span>
+            ))}
           </div>
-
-          {/* Sidebar */}
-          <aside className="space-y-6">
-            <div className="card">
-              <div className="card-header">
-                <h3 className="text-lg font-semibold">Información adicional</h3>
-              </div>
-              <div className="card-content space-y-4">
-                <div>
-                  <div className="text-sm text-slate-600">Código del trámite</div>
-                  <div className="font-semibold">{t.code ?? "—"}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-slate-600">Costo</div>
-                  <div className="font-semibold">{costo}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-slate-600">Tiempo estimado</div>
-                  <div className="font-semibold">{t.estimated_time ?? "No especificado"}</div>
-                </div>
-              </div>
-            </div>
-
-            {!!t.normativas?.length && (
-              <div className="card">
-                <div className="card-header">
-                  <h3 className="text-lg font-semibold">Marco normativo</h3>
-                </div>
-                <div className="card-content space-y-3">
-                  {t.normativas!.map((n) => (
-                    <div key={n.id} className="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-xl">
-                      <div className="font-medium text-sm">{n.title}</div>
-                      {n.link && (
-                        <a className="btn btn-outline btn-sm" href={n.link} target="_blank" rel="noreferrer">
-                          PDF
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </aside>
-        </div>
-      )}
-    </Layout>
+        </section>
+      ) : null}
+    </div>
   );
 }

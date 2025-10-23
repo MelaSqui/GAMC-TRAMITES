@@ -2,58 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ajustes visuales opcionales */
+.prose a { @apply text-accent-500 hover:underline; }
+
+
+
+:root {
+  --font-sans: 'Poppins', system-ui, sans-serif;
+  --font-deco: 'Hello Bunny', cursive;
+
+  --c-primary: #4B2C8E; /* Morado institucional */
+  --c-primary-dark: #3A2470;
+  --c-primary-light: #6D55A6;
+
+  --c-aqua: #37C7E5; /* Celeste vivo */
+  --c-aqua2: #AEE1F3; /* Celeste claro */
+  --c-cyan: #00B7DE;  /* Azul brillante */
+
+  --c-text: #0F172A;
+  --c-soft: #F5F7FB;
+  --c-border: #E6E8EF;
+  --c-muted: #6B7280;
+
+  --shadow-card: 0 6px 18px rgba(17, 24, 39, 0.08);
+}
+
+
+html,
+body {
+  font-family: var(--font-sans);
+  color: var(--c-text);
+  background-color: white;
+  min-height: 100%;
+}
+
+a {
+  color: var(--c-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--c-primary-dark);
+}
+
+
 @layer components {
-  .container { @apply max-w-6xl mx-auto px-4; }
-  .section-padding { @apply py-6 md:py-8; }
-
-  .card { @apply bg-white rounded-2xl shadow-sm border border-slate-200; }
-  .card-header { @apply px-5 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl; }
-  .card-content { @apply p-5; }
-
-  .btn { 
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition;
-    @apply bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-  .btn-outline { @apply bg-white text-slate-700 border border-slate-300 hover:bg-slate-50; }
-  .btn-primary { @apply bg-blue-600 text-white hover:bg-blue-700; }
-  .btn-sm { @apply px-3 py-1.5 text-xs rounded-lg; }
-
-  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium; }
-  .badge-neutral { @apply bg-slate-100 text-slate-700; }
-  .badge-info { @apply bg-blue-100 text-blue-700; }
-  .badge-success { @apply bg-green-100 text-green-700; }
-  .badge-primary { @apply bg-indigo-100 text-indigo-700; }
-
-  .section-title { @apply text-xl md:text-2xl font-bold text-slate-900; }
-  .page-title { @apply text-2xl md:text-3xl font-bold text-slate-900; }
-  .text-muted { @apply text-slate-500; }
-
-  .input {
-    @apply w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white;
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
-    @apply placeholder:text-slate-400 text-slate-900;
+  /* Tarjetas y botones */
+  .card {
+    @apply bg-white rounded-2xl border border-[var(--c-border)] shadow-[var(--shadow-card)];
   }
 
-  .header {
-    @apply bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm;
-  }
-  .footer {
-    @apply bg-slate-100 border-t border-slate-200 mt-12;
-  }
-  .footer-inner {
-    @apply container py-6 text-center text-sm text-slate-600;
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl 
+    bg-[var(--c-primary)] text-white font-semibold px-6 py-3 
+    shadow-[var(--shadow-card)] hover:bg-[var(--c-primary-dark)] 
+    transition-all;
   }
 
+  .btn-soft {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl 
+    bg-[var(--c-soft)] text-[var(--c-text)] font-medium px-5 py-2.5 
+    border border-[var(--c-border)] hover:bg-white transition-all;
+  }
+
+  /* Píldoras o tags */
+  .pill {
+    @apply rounded-xl bg-white border border-[var(--c-border)] 
+    text-sm font-semibold px-4 py-1 shadow-inner;
+  }
+
+  /* Estadísticas hero */
+  .stat-bubble {
+    @apply bg-white/10 backdrop-blur-md rounded-2xl px-8 py-6 text-white 
+    border border-white/15 shadow-[var(--shadow-card)];
+  }
+
+  /* Modal */
   .modal-overlay {
-    @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4;
+    @apply fixed inset-0 bg-black/40 flex items-center justify-center z-50;
   }
-  .modal-content {
-    @apply bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto;
+
+  .modal-card {
+    @apply bg-white rounded-2xl shadow-[var(--shadow-card)] p-6 w-full max-w-3xl relative;
   }
-  .modal-body {
-    @apply px-6 py-6;
+
+  /* Tipografía decorativa */
+  .title-deco {
+    font-family: var(--font-deco);
   }
-  .modal-footer {
-    @apply sticky bottom-0 bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-end gap-3;
-  }
+}
+
+
+.prose ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.prose ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.prose li {
+  margin-bottom: 0.3rem;
+}
+.prose a {
+  color: var(--c-primary);
+  text-decoration: underline;
+}
+.prose strong {
+  color: var(--c-primary);
 }

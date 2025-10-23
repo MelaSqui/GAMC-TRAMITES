@@ -1,99 +1,62 @@
-// src/pages/UnitPage.tsx
-import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
-import SearchInput from "../components/SearchInput";
-import Spinner from "../components/Spinner";
-import UnitCard from "../components/UnitCard";
-import UnitModal from "../components/UnitModal";
-import EmptyState from "../components/EmptyState";
-import API from "../lib/api";
-import type { Unit } from "../lib/types";
+import React, { useEffect, useState } from 'react';
+import { getUnits } from '../lib/api';
+import type { Unit } from '../lib/types';
+import UnitCard from '../components/UnitCard';
+import UnitModal from '../components/UnitModal';
 
-export default function UnitsPage() {
-  const [q, setQ] = useState("");
-  const [items, setItems] = useState<Unit[]>([]);
+export default function UnitPage() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
-  const [loadingUnit, setLoadingUnit] = useState(false);
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [openUnit, setOpenUnit] = useState<Unit | null>(null);
 
   useEffect(() => {
-    let cancel = false;
-    setLoading(true);
-    API.getUnits(q)
-      .then((data) => !cancel && setItems(data))
-      .catch((e) => !cancel && setError(e.message))
-      .finally(() => !cancel && setLoading(false));
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await getUnits();
+        if (!mounted) return;
+        setUnits(data);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
     return () => {
-      cancel = true;
+      mounted = false;
     };
-  }, [q]);
-
-  const handleUnitClick = async (unitId: number) => {
-    setLoadingUnit(true);
-    try {
-      const fullUnit = await API.getUnit(unitId);
-      setSelectedUnit(fullUnit);
-    } catch (e: any) {
-      console.error('Error cargando unidad:', e);
-    } finally {
-      setLoadingUnit(false);
-    }
-  };
+  }, []);
 
   return (
-    <Layout>
-      <div className="mb-6">
-        <h1 className="page-title mb-2">Unidades municipales</h1>
-        <p className="text-muted">
-          Explora las diferentes unidades y sus trámites disponibles
-        </p>
-      </div>
-
-      <div className="mb-6">
-        <SearchInput value={q} onChange={setQ} placeholder="Buscar unidad..." />
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner size="lg" />
+    <div className="min-h-screen">
+      <div className="bg-primary-600/10 border-b border-primary-100">
+        <div className="container py-8">
+          <h1 className="text-2xl font-semibold text-text-900">Unidades Administrativas</h1>
+          <p className="text-text-600 mt-1">
+            Explora los trámites organizados por unidad administrativa.
+          </p>
         </div>
-      ) : error ? (
-        <div className="card">
-          <div className="card-content text-center py-8">
-            <div className="text-red-600 mb-2">Error al cargar</div>
-            <p className="text-slate-600">{error}</p>
+      </div>
+
+      <section className="container">
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="card h-56 animate-pulse" />
+            ))}
           </div>
-        </div>
-      ) : items.length === 0 ? (
-        <EmptyState
-          title="No se encontraron unidades"
-          subtitle={q ? "Intenta con otros términos de búsqueda" : "No hay unidades disponibles"}
-        />
-      ) : (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((u) => (
-            <UnitCard
-              key={u.id}
-              unit={u}
-              onClick={() => handleUnitClick(u.id)}
-            />
-          ))}
-        </div>
-      )}
+        ) : units.length === 0 ? (
+          <div className="card">
+            <p className="text-text-600">No hay unidades disponibles.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {units.map((u) => (
+              <UnitCard key={u.id} unit={u} onOpen={() => setOpenUnit(u)} />
+            ))}
+          </div>
+        )}
+      </section>
 
-      {loadingUnit && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <Spinner size="lg" />
-        </div>
-      )}
-
-      {selectedUnit && (
-        <UnitModal
-          unit={selectedUnit}
-          onClose={() => setSelectedUnit(null)}
-        />
-      )}
-    </Layout>
+      <UnitModal open={!!openUnit} unit={openUnit} onClose={() => setOpenUnit(null)} />
+    </div>
   );
 }

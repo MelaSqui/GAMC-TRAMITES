@@ -1,58 +1,54 @@
-// src/components/UnitCard.tsx
-import type { Unit } from "../lib/types";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { Unit } from '../lib/types';
 
-export default function UnitCard({ 
-  unit, 
-  onClick 
-}: { 
-  unit: Unit; 
-  onClick: () => void;
-}) {
-  const colors = [
-    'from-blue-500 to-blue-600',
-    'from-purple-500 to-purple-600',
-    'from-green-500 to-green-600',
-    'from-orange-500 to-orange-600',
-    'from-pink-500 to-pink-600',
-    'from-indigo-500 to-indigo-600',
-  ];
-  const colorClass = colors[unit.id % colors.length];
+type Props = {
+  unit: Unit;
+  /** Abre el modal de detalles */
+  onOpen?: () => void;
+};
 
-  const initials = unit.name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+export default function UnitCard({ unit, onOpen }: Props) {
+  const navigate = useNavigate();
+
+  const goTramites = () => navigate(`/unidades/${unit.id}`);
 
   return (
-    <button
-      onClick={onClick}
-      className="block group w-full text-left"
-    >
-      <div className="card hover:shadow-lg transition-all duration-200 overflow-hidden">
-        <div className="relative h-40 overflow-hidden">
-          {unit.cover_url ? (
-            <img
-              src={unit.cover_url}
-              alt={unit.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${colorClass} flex items-center justify-center`}>
-              <span className="text-5xl font-bold text-white/90">
-                {initials}
-              </span>
-            </div>
-          )}
+    <article className="card overflow-hidden">
+      {/* Portada opcional */}
+      {unit.cover_url ? (
+        <div className="h-28 w-full overflow-hidden">
+          <img
+            src={unit.cover_url}
+            alt={unit.name}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
         </div>
+      ) : null}
 
-        <div className="p-5">
-          <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-600 transition-colors text-center">
-            {unit.name}
-          </h3>
+      <div className="card-content">
+        <h3 className="section-title text-base">{unit.name}</h3>
+
+        {unit.description ? (
+          <p className="text-sm text-muted mt-1">
+            {unit.description.length > 140
+              ? unit.description.slice(0, 140) + '…'
+              : unit.description}
+          </p>
+        ) : (
+          <p className="text-sm text-muted mt-1">Sin descripción.</p>
+        )}
+
+        <div className="mt-4 flex items-center gap-2">
+          <button type="button" className="btn btn-outline btn-sm" onClick={onOpen}>
+            Ver detalles
+          </button>
+          <button type="button" className="btn btn-primary btn-sm" onClick={goTramites}>
+            Ver trámites
+          </button>
         </div>
       </div>
-    </button>
+    </article>
   );
 }
