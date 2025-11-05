@@ -28,15 +28,11 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-
-            // 👇 Un único logo para topbar y también para el login (Filament v4)
+           //Logo
             ->brandLogo(asset('images/Logo_cocha.png'))
-            // (opcional) ajusta el alto si se ve muy grande/pequeño
             ->brandLogoHeight('3rem')
-            // (opcional) si no quieres texto al lado del logo:
             ->brandName('')
-
-            // 🎨 Paleta institucional (morado/turquesa)
+            //Paleta de colores
             ->colors([
                 'primary' => [
                     50  => '#F3ECFA',
@@ -44,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
                     200 => '#C7A5E7',
                     300 => '#AB78DB',
                     400 => '#8F4BCF',
-                    500 => '#6E55A4', // morado principal
+                    500 => '#6E55A4', 
                     600 => '#5A4587',
                     700 => '#46356B',
                     800 => '#32244F',
@@ -56,7 +52,7 @@ class AdminPanelProvider extends PanelProvider
                     200 => '#80DDF2',
                     300 => '#4DD0ED',
                     400 => '#1AC3E8',
-                    500 => '#47B4D8', // turquesa principal
+                    500 => '#47B4D8', 
                     600 => '#3BA0C2',
                     700 => '#2E8CAA',
                     800 => '#217894',

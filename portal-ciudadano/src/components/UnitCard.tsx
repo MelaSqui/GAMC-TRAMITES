@@ -4,7 +4,6 @@ import type { Unit } from '../lib/types';
 
 type Props = {
   unit: Unit;
-  /** Abre el modal de detalles */
   onOpen?: () => void;
 };
 
@@ -15,7 +14,6 @@ export default function UnitCard({ unit, onOpen }: Props) {
 
   return (
     <article className="card overflow-hidden">
-      {/* Portada opcional */}
       {unit.cover_url ? (
         <div className="h-28 w-full overflow-hidden">
           <img

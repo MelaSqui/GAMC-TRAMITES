@@ -4,7 +4,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   ariaLabel?: string;
-  widthClass?: string; // p.ej.: "max-w-4xl"
+  widthClass?: string;
   children: React.ReactNode;
 };
 
@@ -38,7 +38,7 @@ export default function Modal({
     >
       <div
         className={`w-full ${widthClass} rounded-2xl bg-white shadow-xl ring-1 ring-black/5 outline-none grid`}
-        style={{ gridTemplateRows: 'auto 1fr auto', maxHeight: '90vh' }}  // <= clave
+        style={{ gridTemplateRows: 'auto 1fr auto', maxHeight: '90vh' }}
       >
         {children}
       </div>
@@ -74,7 +74,7 @@ export function ModalHeader({
 
 export function ModalBody({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-6 py-4 overflow-y-auto"> {/* <= scroll interno */}
+    <div className="px-6 py-4 overflow-y-auto">
       {children}
     </div>
   );

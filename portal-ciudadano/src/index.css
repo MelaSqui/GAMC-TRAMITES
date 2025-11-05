@@ -2,112 +2,335 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ajustes visuales opcionales */
-.prose a { @apply text-accent-500 hover:underline; }
-
-
-
 :root {
-  --font-sans: 'Poppins', system-ui, sans-serif;
-  --font-deco: 'Hello Bunny', cursive;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
+  /* Colores principales - Cochabamba */
   --c-primary: #4B2C8E; /* Morado institucional */
   --c-primary-dark: #3A2470;
   --c-primary-light: #6D55A6;
 
   --c-aqua: #37C7E5; /* Celeste vivo */
   --c-aqua2: #AEE1F3; /* Celeste claro */
-  --c-cyan: #00B7DE;  /* Azul brillante */
+  --c-cyan: #00B7DE;
 
   --c-text: #0F172A;
   --c-soft: #F5F7FB;
   --c-border: #E6E8EF;
-  --c-muted: #6B7280;
+  --c-muted: #64748B;
 
-  --shadow-card: 0 6px 18px rgba(17, 24, 39, 0.08);
+  --shadow-card: 0 4px 12px rgba(75, 44, 142, 0.08);
+  --shadow-lg: 0 10px 40px rgba(75, 44, 142, 0.12);
 }
 
+* {
+  box-sizing: border-box;
+}
 
 html,
 body {
   font-family: var(--font-sans);
   color: var(--c-text);
-  background-color: white;
-  min-height: 100%;
+  background-color: #FAFBFC;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 a {
   color: var(--c-primary);
   text-decoration: none;
+  transition: color 0.2s;
 }
 
 a:hover {
   color: var(--c-primary-dark);
 }
 
+/* ============================================
+   COMPONENTES BASE
+============================================ */
 
 @layer components {
-  /* Tarjetas y botones */
+  /* Container */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Hero principal */
+  .hero {
+    background: linear-gradient(135deg, #4B2C8E 0%, #3A2470 50%, #5B3FA8 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 1rem 0 3rem;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(55, 199, 229, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1 {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-white;
+  }
+
+  /* Stats pills en hero */
+  .stat-pill {
+    @apply bg-white/10 backdrop-blur-md rounded-2xl px-6 py-4 text-white 
+    border border-white/20 shadow-lg transition-transform hover:scale-105;
+  }
+
+  /* Tarjetas */
   .card {
-    @apply bg-white rounded-2xl border border-[var(--c-border)] shadow-[var(--shadow-card)];
+    @apply bg-white rounded-2xl border border-[var(--c-border)] 
+    shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-lg)];
+  }
+
+  .card-header {
+    @apply px-5 py-4 border-b border-[var(--c-border)] rounded-t-2xl;
+  }
+
+  .card-content {
+    @apply p-5;
+  }
+
+  /* Botones */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl 
+    px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer
+    disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl 
-    bg-[var(--c-primary)] text-white font-semibold px-6 py-3 
-    shadow-[var(--shadow-card)] hover:bg-[var(--c-primary-dark)] 
-    transition-all;
+    @apply bg-[var(--c-primary)] text-white hover:bg-[var(--c-primary-dark)] 
+    shadow-md hover:shadow-lg;
+  }
+
+  .btn-outline {
+    @apply bg-white text-[var(--c-text)] border border-[var(--c-border)] 
+    hover:bg-[var(--c-soft)];
   }
 
   .btn-soft {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl 
-    bg-[var(--c-soft)] text-[var(--c-text)] font-medium px-5 py-2.5 
-    border border-[var(--c-border)] hover:bg-white transition-all;
+    @apply bg-[var(--c-soft)] text-[var(--c-text)] hover:bg-white 
+    border border-transparent hover:border-[var(--c-border)];
   }
 
-  /* Píldoras o tags */
-  .pill {
-    @apply rounded-xl bg-white border border-[var(--c-border)] 
-    text-sm font-semibold px-4 py-1 shadow-inner;
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs rounded-lg;
   }
 
-  /* Estadísticas hero */
-  .stat-bubble {
-    @apply bg-white/10 backdrop-blur-md rounded-2xl px-8 py-6 text-white 
-    border border-white/15 shadow-[var(--shadow-card)];
+  .btn-lg {
+    @apply px-6 py-3 text-base rounded-xl;
   }
 
-  /* Modal */
-  .modal-overlay {
-    @apply fixed inset-0 bg-black/40 flex items-center justify-center z-50;
+  /* Input */
+  .input {
+   @apply w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none transition-all placeholder:text-[var(--c-muted)];
+    border-color: var(--c-border);
   }
 
-  .modal-card {
-    @apply bg-white rounded-2xl shadow-[var(--shadow-card)] p-6 w-full max-w-3xl relative;
+  .input:focus {
+    border-color: var(--c-primary);
+    /* Imitamos el "focus:ring" con box-shadow */
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 20%, transparent);
   }
 
-  /* Tipografía decorativa */
-  .title-deco {
-    font-family: var(--font-deco);
+  /* Badges/Pills */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full 
+    px-3 py-1 text-xs font-medium border;
+  }
+
+  .badge-gray {
+    @apply bg-slate-50 text-slate-700 border-slate-200;
+  }
+
+  .badge-sky {
+    @apply bg-sky-50 text-sky-700 border-sky-200;
+  }
+
+  .badge-purple {
+    @apply bg-purple-50 text-purple-700 border-purple-200;
+  }
+
+  .badge-cyan {
+    @apply bg-cyan-50 text-cyan-700 border-cyan-200;
+  }
+
+  /* Pills info (en modales) */
+  .info-pill {
+    @apply rounded-xl p-4 text-center border shadow-inner;
+  }
+
+  .info-pill-sky {
+    @apply bg-sky-50/70 border-sky-200 text-sky-900;
+  }
+
+  .info-pill-purple {
+    @apply bg-purple-50/70 border-purple-200 text-purple-900;
+  }
+
+  .info-pill-cyan {
+    @apply bg-cyan-50/70 border-cyan-200 text-cyan-900;
+  }
+
+  .info-pill-gray {
+    @apply bg-slate-50/70 border-slate-200 text-slate-900;
+  }
+
+  /* Header de página */
+  .page-header {
+    @apply bg-gradient-to-r from-[var(--c-primary)] to-[var(--c-primary-light)]
+    py-8 md:py-12;
+  }
+
+  .page-header h1 {
+    @apply text-white;
+  }
+
+  .page-header p {
+    @apply text-white/90;
+  }
+
+  /* Sección */
+  .section {
+    @apply py-8 md:py-12;
+  }
+
+  /* Tipografía */
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-[var(--c-text)];
+  }
+
+  .text-muted {
+    @apply text-[var(--c-muted)];
   }
 }
 
+/* ============================================
+   PROSE (para contenido HTML)
+============================================ */
+
+.prose {
+  @apply text-sm text-[var(--c-text)] leading-relaxed;
+}
 
 .prose ul {
   list-style: disc;
-  padding-left: 1.25rem;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
 }
+
 .prose ol {
   list-style: decimal;
-  padding-left: 1.25rem;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
 }
+
 .prose li {
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
 }
+
+.prose li::marker {
+  color: var(--c-primary);
+}
+
 .prose a {
   color: var(--c-primary);
   text-decoration: underline;
 }
-.prose strong {
+
+.prose a:hover {
+  color: var(--c-primary-dark);
+}
+
+.prose strong,
+.prose b {
   color: var(--c-primary);
+  font-weight: 600;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: var(--c-text);
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose h1 { font-size: 1.5rem; }
+.prose h2 { font-size: 1.25rem; }
+.prose h3 { font-size: 1.125rem; }
+.prose h4 { font-size: 1rem; }
+
+.prose p {
+  margin: 0.75rem 0;
+}
+
+/* ============================================
+   UTILIDADES
+============================================ */
+
+/* Animación de carga */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+}
+
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Line clamp */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
