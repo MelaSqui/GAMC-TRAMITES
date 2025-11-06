@@ -16,7 +16,6 @@ export default function HomePage() {
   const [openUnit, setOpenUnit] = useState<Unit | null>(null);
   const [viewMode, setViewMode] = useState<'tramites' | 'unidades'>('tramites');
 
-  // Cargar trámites y unidades al inicio
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -37,7 +36,6 @@ export default function HomePage() {
     };
   }, []);
 
-  // Filtro dinámico según modo actual
   const filteredTramites = useMemo(() => {
     if (!query.trim()) return tramites;
     const q = query.toLowerCase();
@@ -61,56 +59,76 @@ export default function HomePage() {
     );
   }, [units, query]);
 
+  const popularSearches = ['Vehículo', 'Licencia', 'Construcción', 'Certificado', 'Nacimiento', 'Predial'];
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-50">
       {/* HERO */}
-      <section className="hero">
-        <div className="container">
+      <section className="relative overflow-hidden bg-gradient-to-br from-purple-800 via-purple-900 to-purple-800 py-16 lg:py-20">
+        {/* Fondo decorativo */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-400 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col items-center text-center space-y-6">
-            <div className="flex items-center gap-8 mb-2">
-              <div className="h-16 w-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-                <svg className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="currentColor">
+            {/* Logos */}
+            <div className="flex items-center gap-6 mb-2">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-white">
                   <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
                 </svg>
               </div>
-              <div className="h-12 px-6 bg-white/10 rounded-full flex items-center backdrop-blur-sm border border-white/20">
+              <div className="h-12 px-6 bg-white/10 backdrop-blur-sm rounded-full flex items-center border border-white/20">
                 <span className="text-white font-bold text-lg">Yo ❤️ Cocha</span>
               </div>
             </div>
 
+            {/* Título */}
             <div>
-              <h1 className="text-white mb-3">Alcaldía de Cochabamba</h1>
-              <p className="text-white/90 text-lg font-medium">Sistema de Trámites y Servicios</p>
-              <p className="text-white/70 text-sm mt-2 italic">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3">
+                Alcaldía de Cochabamba
+              </h1>
+              <p className="text-lg text-white/90 font-medium mb-2">
+                Sistema de Trámites y Servicios
+              </p>
+              <p className="text-sm text-white/70 italic">
                 "Al servicio de la ciudadanía cochabambina"
               </p>
             </div>
 
             {/* Estadísticas */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl mt-6">
-              <div className="stat-pill">
-                <div className="text-4xl font-bold mb-1">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                <div className="text-4xl font-bold text-white mb-1">
                   {loading ? '...' : tramites.length}
                 </div>
-                <div className="text-sm font-medium opacity-90">Trámites disponibles</div>
+                <div className="text-sm font-medium text-white/90">
+                  Trámites disponibles
+                </div>
               </div>
-              <div className="stat-pill">
-                <div className="text-4xl font-bold mb-1">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                <div className="text-4xl font-bold text-white mb-1">
                   {loading ? '...' : units.length}
                 </div>
-                <div className="text-sm font-medium opacity-90">Unidades administrativas</div>
+                <div className="text-sm font-medium text-white/90">
+                  Unidades administrativas
+                </div>
               </div>
-              <div className="stat-pill">
-                <div className="text-4xl font-bold mb-1">24/7</div>
-                <div className="text-sm font-medium opacity-90">En línea siempre</div>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                <div className="text-4xl font-bold text-white mb-1">24/7</div>
+                <div className="text-sm font-medium text-white/90">
+                  En línea siempre
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Barra de búsqueda y botón de cambio */}
-      <section className="container -mt-8 mb-8">
+      {/* Búsqueda */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-8">
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-4">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="flex-1">
@@ -120,22 +138,15 @@ export default function HomePage() {
                 placeholder={
                   viewMode === 'tramites'
                     ? 'Buscar trámites... (ej: vehículo, licencia, certificado)'
-                    : 'Buscar unidades... (ej: subalcaldía, medio ambiente, planificación)'
+                    : 'Buscar unidades... (ej: subalcaldía, medio ambiente)'
                 }
               />
             </div>
             <button
-              onClick={() =>
-                setViewMode(viewMode === 'tramites' ? 'unidades' : 'tramites')
-              }
-              className="btn btn-outline flex items-center justify-center gap-2 whitespace-nowrap"
+              onClick={() => setViewMode(viewMode === 'tramites' ? 'unidades' : 'tramites')}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-slate-700 bg-white border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all whitespace-nowrap"
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -144,55 +155,114 @@ export default function HomePage() {
                 />
               </svg>
               <span>
-                {viewMode === 'tramites'
-                  ? 'Ver por unidades'
-                  : 'Ver por trámites'}
+                {viewMode === 'tramites' ? 'Ver por unidades' : 'Ver por trámites'}
               </span>
             </button>
           </div>
+
+          {/* Búsquedas populares */}
+          {!query && viewMode === 'tramites' && (
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <p className="text-xs text-slate-600 font-semibold mb-2">
+                Búsquedas populares:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {popularSearches.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setQuery(tag)}
+                    className="px-4 py-1.5 text-sm font-medium text-slate-700 bg-slate-100 border border-slate-200 rounded-full hover:bg-slate-200 hover:border-slate-300 transition-all"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Contenido dinámico */}
-      <section className="container section">
-        {viewMode === 'tramites' ? (
-          <>
-            <h2 className="text-2xl font-bold mb-6 text-slate-900">
-              {query ? 'Resultados de búsqueda' : 'Trámites disponibles'}
-            </h2>
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="card h-72 animate-pulse" />
-                ))}
+      {/* Resultados */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-8">
+          <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+            {viewMode === 'tramites'
+              ? query
+                ? 'Resultados de búsqueda'
+                : 'Trámites disponibles'
+              : query
+              ? 'Unidades encontradas'
+              : 'Unidades administrativas'}
+          </h2>
+          {viewMode === 'tramites' && filteredTramites.length > 0 && (
+            <p className="text-slate-600">
+              {filteredTramites.length} {filteredTramites.length === 1 ? 'trámite encontrado' : 'trámites encontrados'}
+            </p>
+          )}
+          {viewMode === 'unidades' && filteredUnits.length > 0 && (
+            <p className="text-slate-600">
+              {filteredUnits.length} {filteredUnits.length === 1 ? 'unidad encontrada' : 'unidades encontradas'}
+            </p>
+          )}
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl border border-slate-200 h-80 animate-pulse"
+              />
+            ))}
+          </div>
+        ) : viewMode === 'tramites' ? (
+          filteredTramites.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-slate-400">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTramites.map((t) => (
-                  <TramiteCard key={t.id} tramite={t} onOpen={() => setOpenTramite(t)} />
-                ))}
-              </div>
-            )}
-          </>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                No se encontraron resultados
+              </h3>
+              <p className="text-slate-600 max-w-md mx-auto">
+                {query
+                  ? `No encontramos trámites que coincidan con "${query}"`
+                  : 'No hay trámites disponibles'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTramites.map((t) => (
+                <TramiteCard key={t.id} tramite={t} onOpen={() => setOpenTramite(t)} />
+              ))}
+            </div>
+          )
         ) : (
-          <>
-            <h2 className="text-2xl font-bold mb-6 text-slate-900">
-              {query ? 'Unidades encontradas' : 'Unidades administrativas'}
-            </h2>
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="card h-64 animate-pulse" />
-                ))}
+          filteredUnits.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-slate-400">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredUnits.map((u) => (
-                  <UnitCard key={u.id} unit={u} onOpen={() => setOpenUnit(u)} />
-                ))}
-              </div>
-            )}
-          </>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                No se encontraron unidades
+              </h3>
+              <p className="text-slate-600 max-w-md mx-auto">
+                {query
+                  ? `No encontramos unidades que coincidan con "${query}"`
+                  : 'No hay unidades disponibles'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredUnits.map((u) => (
+                <UnitCard key={u.id} unit={u} onOpen={() => setOpenUnit(u)} />
+              ))}
+            </div>
+          )
         )}
       </section>
 

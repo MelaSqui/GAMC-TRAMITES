@@ -1,0 +1,242 @@
+/* ============================================
+   UnitCard.css
+   Estilos para las tarjetas de unidades administrativas
+============================================ */
+
+.unit-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E6E8EF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.unit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(75, 44, 142, 0.12);
+  border-color: #CBD5E1;
+}
+
+/* Imagen de portada opcional */
+.unit-card-cover {
+  height: 112px;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #4B2C8E 0%, #6D55A6 100%);
+}
+
+.unit-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Contenido */
+.unit-card-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header con icono y título */
+.unit-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.unit-card-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.unit-card-icon svg {
+  width: 22px !important;
+  height: 22px !important;
+  max-width: 22px;
+  max-height: 22px;
+  color: #0369A1;
+  display: block;
+}
+
+.unit-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+  flex: 1;
+}
+
+/* Descripción */
+.unit-card-description {
+  font-size: 14px;
+  color: #64748B;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Información de contacto */
+.unit-card-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.unit-card-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.unit-card-contact-icon {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  min-height: 18px;
+  max-width: 18px;
+  max-height: 18px;
+  color: #94A3B8;
+  flex-shrink: 0;
+  display: block;
+}
+
+.unit-card-contact-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Link de acción */
+.unit-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #06B6D4;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: auto;
+  transition: all 0.2s ease;
+}
+
+.unit-card-link:hover {
+  color: #0891B2;
+  gap: 8px;
+}
+
+.unit-card-link svg {
+  width: 16px !important;
+  height: 16px !important;
+  max-width: 16px;
+  max-height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Botones alternativos */
+.unit-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.unit-card-button {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.unit-card-button-outline {
+  background: white;
+  color: #0F172A;
+  border: 2px solid #E6E8EF;
+}
+
+.unit-card-button-outline:hover {
+  background: #F5F7FB;
+  border-color: #CBD5E1;
+}
+
+.unit-card-button-primary {
+  background: #4B2C8E;
+  color: white;
+  box-shadow: 0 2px 4px rgba(75, 44, 142, 0.2);
+}
+
+.unit-card-button-primary:hover {
+  background: #3A2470;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(75, 44, 142, 0.3);
+}
+
+.unit-card-button-primary:active {
+  transform: translateY(0);
+}
+
+/* Grid de unidades */
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .units-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .units-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Estado de carga */
+.unit-card-skeleton {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E6E8EF;
+  height: 280px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

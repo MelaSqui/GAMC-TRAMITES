@@ -62,7 +62,7 @@ a:hover {
     background: linear-gradient(135deg, #4B2C8E 0%, #3A2470 50%, #5B3FA8 100%);
     position: relative;
     overflow: hidden;
-    padding: 1rem 0 3rem;
+    padding: 4rem 0 6rem;
   }
 
   .hero::before {
@@ -139,14 +139,23 @@ a:hover {
 
   /* Input */
   .input {
-   @apply w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none transition-all placeholder:text-[var(--c-muted)];
-    border-color: var(--c-border);
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--c-border);
+    background: white;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .input::placeholder {
+    color: var(--c-muted);
   }
 
   .input:focus {
     border-color: var(--c-primary);
-    /* Imitamos el "focus:ring" con box-shadow */
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 20%, transparent);
+    box-shadow: 0 0 0 3px rgba(75, 44, 142, 0.2);
   }
 
   /* Badges/Pills */
