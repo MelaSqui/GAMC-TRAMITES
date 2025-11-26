@@ -62,66 +62,52 @@ export default function HomePage() {
   const popularSearches = ['Vehículo', 'Licencia', 'Construcción', 'Certificado', 'Nacimiento', 'Predial'];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 font-poppins">
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-purple-800 via-purple-900 to-purple-800 py-16 lg:py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-purple-800 via-purple-900 to-purple-800 py-16 lg:py-20 font-poppins">
+        {/* Imagen de fondo */}
+        <div 
+          className="absolute inset-0 opacity-100"
+          style={{
+            backgroundImage: "url('/images/Portada_1.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center bottom',
+            backgroundAttachment: 'fixed'
+          }}
+        ></div>
+
+        {/* Overlay oscuro para contraste */}
+        <div className="absolute inset-0 bg-black/10"></div>
+
         {/* Fondo decorativo */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-400 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl"></div>
         </div>
 
+        {/* Contenido */}
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col items-center text-center space-y-6">
             {/* Logos */}
-            <div className="flex items-center gap-6 mb-2">
-              <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-white">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
-                </svg>
-              </div>
-              <div className="h-12 px-6 bg-white/10 backdrop-blur-sm rounded-full flex items-center border border-white/20">
-                <span className="text-white font-bold text-lg">Yo ❤️ Cocha</span>
-              </div>
+            <div className="flex items-center justify-center gap-4 mb-2">
+              <img 
+                src="/images/Logo_cocha_blanco.png" 
+                alt="Logo Alcaldía" 
+                className="w-56 h-56 object-contain"
+              />
             </div>
 
             {/* Título */}
             <div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3">
-                Alcaldía de Cochabamba
+                Guía de Trámites y Servicios
               </h1>
               <p className="text-lg text-white/90 font-medium mb-2">
-                Sistema de Trámites y Servicios
+                Alcaldía de Cochabamba
               </p>
               <p className="text-sm text-white/70 italic">
                 "Al servicio de la ciudadanía cochabambina"
               </p>
-            </div>
-
-            {/* Estadísticas */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl mt-6">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                <div className="text-4xl font-bold text-white mb-1">
-                  {loading ? '...' : tramites.length}
-                </div>
-                <div className="text-sm font-medium text-white/90">
-                  Trámites disponibles
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                <div className="text-4xl font-bold text-white mb-1">
-                  {loading ? '...' : units.length}
-                </div>
-                <div className="text-sm font-medium text-white/90">
-                  Unidades administrativas
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                <div className="text-4xl font-bold text-white mb-1">24/7</div>
-                <div className="text-sm font-medium text-white/90">
-                  En línea siempre
-                </div>
-              </div>
             </div>
           </div>
         </div>
