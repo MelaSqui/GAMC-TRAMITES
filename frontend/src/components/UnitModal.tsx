@@ -22,7 +22,7 @@ export default function UnitModal({ open, unit, onClose }: Props) {
 
   const handleVerTramites = () => {
     onClose();
-    navigate(`/unidades/${unit.id}`);
+    navigate(`/unidades/${unit.id}`, { replace: true });
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { listTramitesByUnit } from '../lib/api';
 import type { Tramite, Unit } from '../lib/types';
 import TramiteCard from '../components/TramiteCard';
@@ -14,6 +14,7 @@ export default function UnitTramitesPage() {
   const [unit, setUnit] = useState<Unit | undefined>(undefined);
   const [tramites, setTramites] = useState<Tramite[]>([]);
   const [query, setQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true;
@@ -73,15 +74,15 @@ export default function UnitTramitesPage() {
                 )}
               </div>
 
-              <Link
-                to="/unidades"
+              <button
+                onClick={() => navigate('/', { replace: true })}
                 className="btn btn-soft bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 Volver
-              </Link>
+              </button>
             </div>
 
             {unit && (
