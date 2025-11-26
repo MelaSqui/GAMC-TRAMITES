@@ -34,6 +34,7 @@ public function toArray($request)
                 'issued_date' => $n->issued_date,
             ]);
         }),
+        'keywords'       => $this->keywords->pluck('name')->toArray(),
     ];
 }
 

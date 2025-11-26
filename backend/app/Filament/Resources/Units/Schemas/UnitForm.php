@@ -6,7 +6,7 @@ use App\Models\Unit;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section; // ⬅️ IMPORTANTE: Section ahora es de Schemas
+use Filament\Schemas\Components\Section;
 use Filament\Notifications\Notification;
 
 class UnitForm
@@ -47,20 +47,20 @@ class UnitForm
                 ->schema([
                     Forms\Components\Select::make('responsable_user_id')
                         ->label('Responsable (usuario)')
-                        ->options(fn () => User::orderBy('name')->pluck('name', 'id'))
+                        ->relationship('responsable', 'name')
                         ->searchable()
                         ->preload()
                         ->placeholder('Selecciona un usuario responsable…')
                         ->native(false)
-                        ->reactive()
+                        ->live()
                         ->afterStateUpdated(function ($state, ?Unit $record, callable $set) {
                             if (! $state) {
                                 return;
                             }
 
-                            // Copia el nombre al campo "contact" como respaldo visible
+                            // Copia el nombre al campo "contact_name" como respaldo visible
                             if ($user = User::find($state)) {
-                                $set('contact', $user->name);
+                                $set('contact_name', $user->name);
                             }
 
                             // Si estamos editando (record ya existe), lo anexamos a la unidad.
@@ -75,18 +75,18 @@ class UnitForm
                         })
                         ->helperText('Además de mostrarse en público, el usuario quedará vinculado a esta unidad.'),
 
-                    Forms\Components\TextInput::make('contact')
+                    Forms\Components\TextInput::make('contact_name')
                         ->label('Contacto (texto)')
                         ->helperText('Se completa automáticamente al elegir responsable, puedes ajustarlo si es necesario.')
-                        ->maxLength(255),
+                        ->maxLength(120),
 
                     Forms\Components\TextInput::make('level')
                         ->label('Nivel')
-                        ->maxLength(255),
+                        ->maxLength(120),
 
-                    Forms\Components\TextInput::make('internal')
+                    Forms\Components\TextInput::make('internal_phone')
                         ->label('Interno')
-                        ->maxLength(255),
+                        ->maxLength(120),
                 ])
                 ->columns(2),
 
@@ -100,12 +100,12 @@ class UnitForm
                         ->maxLength(255)
                         ->columnSpanFull(),
 
-                    Forms\Components\TextInput::make('phones')
+                    Forms\Components\TagsInput::make('phones')
                         ->label('Teléfonos')
-                        ->placeholder('E.g. 4-4258000')
-                        ->maxLength(255),
+                        ->placeholder('Agrega teléfonos...')
+                        ->helperText('Ingresa cada teléfono y presiona Enter para agregar más'),
 
-                    Forms\Components\TextInput::make('website')
+                    Forms\Components\TextInput::make('website_url')
                         ->label('Página web')
                         ->url()
                         ->maxLength(255)
@@ -119,14 +119,14 @@ class UnitForm
             Section::make('Portada')
                 ->description('Imagen que se mostrará en el card y modal de la unidad.')
                 ->schema([
-                    Forms\Components\FileUpload::make('cover_path')
+                    Forms\Components\FileUpload::make('cover_url')
                         ->label('Imagen de portada')
                         ->image()
                         ->directory('units/covers')
                         ->disk('public')
                         ->maxSize(4096)
                         ->imageEditor()
-                        ->helperText('Formatos: JPG/PNG. Tamaño recomendado panorámico. Máx. 4MB.'),
+                        ->helperText('Formatos: PNG. Tamaño recomendado panorámico. Máx. 4MB.'),
                 ]),
         ])
         ->columns(1);

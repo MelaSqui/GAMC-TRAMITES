@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Unit;
 use App\Models\Tramite;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UnitController extends Controller
 {
@@ -37,9 +38,9 @@ class UnitController extends Controller
                 'level',
                 'contact_name as contact',
                 'address',
-                'phones',              // jsonb
+                'phones',
                 'website_url as website',
-                'cover_url as banner_url',
+                'cover_url',
             ])
             ->map(function ($u) {
                 return $this->normalizeUnit($u);
@@ -54,7 +55,6 @@ class UnitController extends Controller
      */
     public function show(Unit $unit)
     {
-        // Armamos la misma forma que en index (con alias y normalización)
         $u = (object) [
             'id'         => $unit->id,
             'name'       => $unit->name,
@@ -65,7 +65,7 @@ class UnitController extends Controller
             'address'    => $unit->address,
             'phones'     => $unit->phones,
             'website'    => $unit->website_url,
-            'banner_url' => $unit->cover_url,
+            'cover_url'  => $unit->cover_url,
         ];
 
         return response()->json(['data' => $this->normalizeUnit($u)]);
@@ -110,7 +110,7 @@ class UnitController extends Controller
             'address'    => $unit->address,
             'phones'     => $unit->phones,
             'website'    => $unit->website_url,
-            'banner_url' => $unit->cover_url,
+            'cover_url'  => $unit->cover_url,
         ]);
 
         return response()->json([
@@ -122,14 +122,13 @@ class UnitController extends Controller
     /**
      * Normaliza el payload:
      * - Convierte phones (jsonb) a array<string>
-     * - Garantiza claves que consume el frontend.
+     * - Genera URL completa para cover_url
      */
     private function normalizeUnit(object $u): array
     {
         // phones puede venir como jsonb (array, objeto o string). Lo convertimos a array de strings.
         $phones = [];
         if (is_array($u->phones)) {
-            // Si es un array mixto, aplanamos a textos
             foreach ($u->phones as $k => $v) {
                 if (is_string($v) && trim($v) !== '') {
                     $phones[] = $v;
@@ -142,8 +141,13 @@ class UnitController extends Controller
                 }
             }
         } elseif (is_string($u->phones) && trim($u->phones) !== '') {
-            // Si vino como string, lo cortamos por comas
             $phones = array_map('trim', preg_split('/[,;]+/', $u->phones));
+        }
+
+        // Generar URL completa para la imagen de portada
+        $coverUrl = null;
+        if (!empty($u->cover_url)) {
+            $coverUrl = Storage::disk('public')->url($u->cover_url);
         }
 
         return [
@@ -156,7 +160,7 @@ class UnitController extends Controller
             'address'     => $u->address,
             'phones'      => $phones,
             'website'     => $u->website,
-            'banner_url'  => $u->banner_url,
+            'cover_url'   => $coverUrl,
         ];
     }
 }

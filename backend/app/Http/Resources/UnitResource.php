@@ -17,7 +17,7 @@ class UnitResource extends JsonResource
             'level' => $this->level,
             'contact_name' => $this->contact_name,
             'address' => $this->address,
-            'phones' => $this->phones,
+            'phones' => $this->phones_array,  // Usa el helper del modelo
             'internal_phone' => $this->internal_phone,
             'website_url' => $this->website_url,
             'cover_url' => $this->cover_url ? asset('storage/' . $this->cover_url) : null,

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import TramiteModal from './TramiteModal';
 import type { Tramite } from '../lib/types';
@@ -33,20 +32,20 @@ const TramiteCard: React.FC<TramiteCardProps> = ({ tramite, onOpen }) => {
               </span>
             )}
             {tramite.estimated_time && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-600 border border-primary-200">
                 {tramite.estimated_time}
               </span>
             )}
           </div>
 
-          {/* Título */}
-          <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-purple-700 transition-colors leading-tight">
+          {/* Titulo */}
+          <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors leading-tight">
             {tramite.title}
           </h3>
 
-          {/* Descripción */}
+          {/* Descripcion */}
           <p className="text-sm text-slate-600 line-clamp-3 mb-4 flex-grow leading-relaxed">
-            {tramite.description || 'Haz clic para ver más información sobre este trámite.'}
+            {tramite.description || 'Haz clic para ver mas informacion sobre este tramite.'}
           </p>
 
           {/* Unidad responsable */}
@@ -80,12 +79,12 @@ const TramiteCard: React.FC<TramiteCardProps> = ({ tramite, onOpen }) => {
             </div>
           )}
 
-          {/* Botón de acción */}
+          {/* Boton de accion */}
           <button
             onClick={handleOpen}
-            className="mt-4 w-full px-5 py-3 bg-purple-700 text-white text-sm font-semibold rounded-xl hover:bg-purple-800 transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
+            className="mt-4 w-full px-5 py-3 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
           >
-            Ver información completa
+            Ver informacion completa
           </button>
         </div>
       </article>
