@@ -6,7 +6,6 @@ import TramiteCard from '../components/TramiteCard';
 import TramiteModal from '../components/TramiteModal';
 import UnitCard from '../components/UnitCard';
 import UnitModal from '../components/UnitModal';
-import UnitsCarousel from '../components/UnitsCarousel';
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -75,7 +74,9 @@ export default function HomePage() {
             backgroundPosition: 'center bottom',
             backgroundAttachment: 'fixed'
           }}
-        ></div>
+        >
+          
+        </div>
 
         {/* Overlay oscuro para contraste */}
         <div className="absolute inset-0 bg-black/10"></div>
@@ -222,7 +223,7 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredTramites.map((t) => (
-                <TramiteCard key={t.id} tramite={t} />
+                <TramiteCard key={t.id} tramite={t} onOpen={() => setOpenTramite(t)} />
               ))}
             </div>
           )
@@ -243,21 +244,12 @@ export default function HomePage() {
                   : 'No hay unidades disponibles'}
               </p>
             </div>
-          ) : query ? (
-            // Cuando hay búsqueda, mostrar grid normal
+          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredUnits.map((u) => (
                 <UnitCard key={u.id} unit={u} onOpen={() => setOpenUnit(u)} />
               ))}
             </div>
-          ) : (
-            // Sin búsqueda, mostrar carrusel
-            <UnitsCarousel 
-              units={filteredUnits}
-              onOpenUnit={(unit) => setOpenUnit(unit)}
-              autoPlayInterval={5000}
-              itemsPerPage={3}
-            />
           )
         )}
       </section>

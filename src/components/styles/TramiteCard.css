@@ -1,0 +1,233 @@
+/* ============================================
+   TramiteCard.css
+   Estilos para las tarjetas de trámites
+============================================ */
+
+.tramite-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E6E8EF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tramite-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(75, 44, 142, 0.12);
+  border-color: #CBD5E1;
+}
+
+.tramite-card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Header con badges */
+.tramite-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.badge-gray {
+  background: #F8FAFC;
+  color: #475569;
+  border-color: #E2E8F0;
+}
+
+.badge-sky {
+  background: #E0F2FE;
+  color: #0369A1;
+  border-color: #BAE6FD;
+}
+
+.badge-purple {
+  background: #EDE9FE;
+  color: #6D28D9;
+  border-color: #DDD6FE;
+}
+
+.badge-cyan {
+  background: #CFFAFE;
+  color: #0E7490;
+  border-color: #A5F3FC;
+}
+
+/* Título */
+.tramite-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+}
+
+.tramite-card:hover .tramite-card-title {
+  color: #4B2C8E;
+}
+
+/* Descripción */
+.tramite-card-description {
+  font-size: 14px;
+  color: #64748B;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Unidad responsable */
+.tramite-card-unit {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.tramite-card-unit-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tramite-card-unit-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 8px;
+  background: #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tramite-card-unit-icon svg {
+  width: 16px !important;
+  height: 16px !important;
+  max-width: 16px;
+  max-height: 16px;
+  color: #64748B;
+  display: block;
+}
+
+.tramite-card-unit-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.tramite-card-unit-label {
+  font-size: 11px;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.tramite-card-unit-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tramite-card-unit-address,
+.tramite-card-unit-phone {
+  font-size: 12px;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* Botón de acción */
+.tramite-card-button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 20px;
+  background: #4B2C8E;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(75, 44, 142, 0.2);
+}
+
+.tramite-card-button:hover {
+  background: #3A2470;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(75, 44, 142, 0.3);
+}
+
+.tramite-card-button:active {
+  transform: translateY(0);
+}
+
+/* Grid de tarjetas */
+.tramites-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .tramites-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tramites-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Estado de carga */
+.tramite-card-skeleton {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E6E8EF;
+  height: 320px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

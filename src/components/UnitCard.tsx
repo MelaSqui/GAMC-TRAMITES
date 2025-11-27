@@ -41,9 +41,6 @@ export default function UnitCard({ unit, onOpen }: Props) {
                 e.currentTarget.style.display = 'none';
               }}
             />
-
-            {/* Overlay suave */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent pointer-events-none"></div>
           </div>
 
         ) : (
