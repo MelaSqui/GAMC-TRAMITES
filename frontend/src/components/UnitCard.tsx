@@ -1,6 +1,3 @@
-// src/components/UnitCard.tsx
-// VERSION CON IMAGEN GRANDE + BADGE
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Unit } from '../lib/types';
@@ -25,26 +22,32 @@ export default function UnitCard({ unit, onOpen }: Props) {
 
   return (
     <article className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden">
-      {/* Imagen de fondo grande O gradiente con icono */}
+      
+      {/* Imagen / Fondo */}
       <div className="relative h-56 w-full overflow-hidden">
         {unit.cover_url ? (
-          // SI HAY IMAGEN: Mostrar imagen
-          <>
+          
+          // =============================
+          // NUEVA VERSIÓN: PNG TRANSPARENTE + FONDO MORADO (LOGO MÁS PEQUEÑO)
+          // =============================
+          <div className="h-full w-full bg-[#341A67] flex items-center justify-center relative overflow-hidden">
+
             <img
               src={unit.cover_url}
               alt={unit.name}
-              className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+              className="max-w-[200px] h-auto object-contain group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
               onError={(e) => {
-                // Si la imagen falla, ocultar
                 e.currentTarget.style.display = 'none';
               }}
             />
-            {/* Overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-          </>
+
+            {/* Overlay suave */}
+           
+          </div>
+
         ) : (
-          // SI NO HAY IMAGEN: Mostrar gradiente con icono (como diseno actual)
+          // SIN IMAGEN
           <div className="h-full w-full bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 flex items-center justify-center">
             <svg width="96" height="96" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-white/30" strokeWidth={1}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -52,7 +55,7 @@ export default function UnitCard({ unit, onOpen }: Props) {
           </div>
         )}
 
-        {/* Badge circular superior izquierdo */}
+        {/* Badge superior izquierdo */}
         <div className="absolute top-4 left-4">
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold bg-white text-primary-600 shadow-lg backdrop-blur-sm border border-white/20">
             {badge}
@@ -62,7 +65,8 @@ export default function UnitCard({ unit, onOpen }: Props) {
 
       {/* Contenido */}
       <div className="p-6 flex flex-col gap-4">
-        {/* Titulo */}
+        
+        {/* Título y descripción */}
         <div>
           <h3 className="text-xl font-bold text-slate-900 leading-tight mb-2 group-hover:text-primary-600 transition-colors">
             {unit.name}
@@ -72,9 +76,10 @@ export default function UnitCard({ unit, onOpen }: Props) {
           </p>
         </div>
 
-        {/* Informacion de contacto con iconos */}
+        {/* Información de contacto */}
         <div className="flex flex-col gap-3 py-3 border-t border-slate-100">
-          {/* Ubicacion */}
+          
+          {/* Ubicación */}
           {unit.address && (
             <div className="flex items-start gap-3">
               <div className="w-5 h-5 flex-shrink-0 text-slate-400 mt-0.5">
@@ -87,7 +92,7 @@ export default function UnitCard({ unit, onOpen }: Props) {
             </div>
           )}
 
-          {/* Telefono */}
+          {/* Teléfono */}
           {unit.phones && (
             <div className="flex items-center gap-3">
               <div className="w-5 h-5 flex-shrink-0 text-slate-400">
@@ -121,7 +126,7 @@ export default function UnitCard({ unit, onOpen }: Props) {
           </div>
         </div>
 
-        {/* Boton Ver detalles */}
+        {/* Botón Ver Detalles */}
         <button
           type="button"
           onClick={onOpen}
