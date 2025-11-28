@@ -87,7 +87,7 @@ export default function HomePage() {
         </div>
 
         {/* Contenido */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col items-center text-center space-y-6">
             {/* Logos */}
             <div className="flex items-center justify-center gap-4 mb-2">
@@ -115,7 +115,7 @@ export default function HomePage() {
       </section>
 
       {/* Búsqueda */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-8">
+      <section className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-8">
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-4">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="flex-1">
@@ -170,7 +170,7 @@ export default function HomePage() {
       </section>
 
       {/* Resultados */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <section className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
             {viewMode === 'tramites'
@@ -194,8 +194,8 @@ export default function HomePage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
                 className="bg-white rounded-2xl border border-slate-200 h-80 animate-pulse"
@@ -220,50 +220,53 @@ export default function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredTramites.map((t) => (
                 <TramiteCard key={t.id} tramite={t} />
               ))}
             </div>
           )
+        ) : !filteredUnits || filteredUnits.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
+              <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-slate-400">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              No se encontraron unidades
+            </h3>
+            <p className="text-slate-600 max-w-md mx-auto">
+              {query
+                ? `No encontramos unidades que coincidan con "${query}"`
+                : 'No hay unidades disponibles'}
+            </p>
+          </div>
+        ) : query ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredUnits.map((u) => (
+              <UnitCard key={u.id} unit={u} onOpen={() => setOpenUnit(u)} />
+            ))}
+          </div>
         ) : (
-          filteredUnits.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
-                <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-slate-400">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                No se encontraron unidades
-              </h3>
-              <p className="text-slate-600 max-w-md mx-auto">
-                {query
-                  ? `No encontramos unidades que coincidan con "${query}"`
-                  : 'No hay unidades disponibles'}
-              </p>
-            </div>
-          ) : query ? (
-            // Cuando hay búsqueda, mostrar grid normal
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredUnits.map((u) => (
-                <UnitCard key={u.id} unit={u} onOpen={() => setOpenUnit(u)} />
-              ))}
-            </div>
-          ) : (
-            // Sin búsqueda, mostrar carrusel
-            <UnitsCarousel 
-              units={filteredUnits}
-              onOpenUnit={(unit) => setOpenUnit(unit)}
-              autoPlayInterval={5000}
-              itemsPerPage={3}
-            />
-          )
+          <UnitsCarousel 
+            units={filteredUnits}
+            onOpenUnit={(unit) => setOpenUnit(unit)}
+            scrollSpeed={50}
+          />
         )}
       </section>
 
-      <TramiteModal open={!!openTramite} tramite={openTramite} onClose={() => setOpenTramite(null)} />
-      <UnitModal open={!!openUnit} unit={openUnit} onClose={() => setOpenUnit(null)} />
+      <TramiteModal 
+        open={!!openTramite} 
+        tramite={openTramite} 
+        onClose={() => setOpenTramite(null)} 
+      />
+      <UnitModal 
+        open={!!openUnit} 
+        unit={openUnit} 
+        onClose={() => setOpenUnit(null)} 
+      />
     </div>
   );
 }

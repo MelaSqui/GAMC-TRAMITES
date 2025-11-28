@@ -1,128 +1,121 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import UnitCard from './UnitCard';
-import type { Unit } from '../lib/types';
+"use client"
+
+import { useEffect, useState, useRef } from "react"
+import UnitCard from "./UnitCard"
+import type { Unit } from "../lib/types"
 
 type Props = {
-  units: Unit[];
-  onOpenUnit: (unit: Unit) => void;
-  autoPlayInterval?: number;
-  itemsPerPage?: number;
-};
+  units?: Unit[] | null
+  onOpenUnit: (unit: Unit) => void
+  scrollSpeed?: number
+}
 
-export default function UnitsCarousel({ 
+export default function UnitsCarousel({
   units,
   onOpenUnit,
-  autoPlayInterval = 5000, 
-  itemsPerPage = 3 
+  scrollSpeed = 50,
 }: Props) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(false)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [animationDuration, setAnimationDuration] = useState(0)
 
-  const totalPages = Math.ceil(units.length / itemsPerPage);
+  // Validación defensiva
+  const safeUnits = Array.isArray(units) ? units : []
+  
+  // Duplicar items
+  const extendedUnits = [...safeUnits, ...safeUnits, ...safeUnits, ...safeUnits]
 
-  // Auto-play
+  // Calcular la duración de la animación
   useEffect(() => {
-    if (isPaused || units.length <= itemsPerPage) return;
+    if (trackRef.current && safeUnits.length > 0) {
+      const totalWidth = trackRef.current.scrollWidth / 4
+      const duration = totalWidth / scrollSpeed
+      setAnimationDuration(duration)
+    }
+  }, [safeUnits.length, scrollSpeed])
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % totalPages);
-    }, autoPlayInterval);
+  // Si no hay unidades, no renderizar nada
+  if (safeUnits.length === 0) {
+    return null
+  }
 
-    return () => clearInterval(interval);
-  }, [isPaused, autoPlayInterval, totalPages, units.length, itemsPerPage]);
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % totalPages);
-  };
-
-  const goToPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
-  };
-
-  const goToPage = (index: number) => {
-    setCurrentIndex(index);
-  };
-
-  // Obtener unidades de la página actual
-  const currentUnits = units.slice(
-    currentIndex * itemsPerPage,
-    (currentIndex + 1) * itemsPerPage
-  );
-
-  if (units.length === 0) return null;
-
-  return (
-    <div
-      className="relative px-12"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      {/* Grid de cards */}
+  // Si hay 3 o menos unidades, mostrar grid simple
+  if (safeUnits.length <= 3) {
+    return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentUnits.map((unit) => (
-          <div
-            key={unit.id}
-            className="animate-fadeIn"
-          >
-            <UnitCard 
-              unit={unit} 
-              onOpen={() => onOpenUnit(unit)}
-            />
-          </div>
+        {safeUnits.map((unit) => (
+          <UnitCard key={unit.id} unit={unit} onOpen={() => onOpenUnit(unit)} />
         ))}
       </div>
+    )
+  }
 
-      {/* Botones de navegación */}
-      {units.length > itemsPerPage && (
-        <>
-          {/* Botón Anterior */}
-          <button
-            onClick={goToPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl hover:bg-white hover:border-[#341A67] transition-all flex items-center justify-center group"
-            aria-label="Anterior"
-          >
-            <ChevronLeft className="w-5 h-5 text-slate-600 group-hover:text-[#341A67]" />
-          </button>
+  // ✅ NUEVA FUNCIÓN: Manejar click sin pausar el carrusel
+  const handleCardClick = (unit: Unit) => {
+    // Abrir modal sin pausar la animación
+    onOpenUnit(unit)
+  }
 
-          {/* Botón Siguiente */}
-          <button
-            onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl hover:bg-white hover:border-[#341A67] transition-all flex items-center justify-center group"
-            aria-label="Siguiente"
-          >
-            <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-[#341A67]" />
-          </button>
-        </>
-      )}
-
-      {/* Indicadores (dots) */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToPage(index)}
-              className={`transition-all rounded-full ${
-                index === currentIndex
-                  ? 'w-8 h-2 bg-[#341A67]'
-                  : 'w-2 h-2 bg-slate-300 hover:bg-slate-400'
-              }`}
-              aria-label={`Ir a página ${index + 1}`}
-            />
+  return (
+    <div className="relative w-full">
+      {/* ❌ REMOVIDO: onMouseEnter y onMouseLeave para que NO se pause */}
+      <div className="overflow-hidden mask-gradient">
+        <div
+          ref={trackRef}
+          className="flex gap-6 py-2"
+          style={{
+            // ✅ SIEMPRE animando, sin pausa
+            animation: `scroll-continuous ${animationDuration}s linear infinite`,
+          }}
+        >
+          {extendedUnits.map((unit, index) => (
+            <div
+              key={`${unit.id}-${index}`}
+              className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] min-w-[320px] max-w-[420px]"
+              onClick={() => handleCardClick(unit)}
+              style={{ cursor: 'pointer' }}
+            >
+              <UnitCard unit={unit} onOpen={() => handleCardClick(unit)} />
+            </div>
           ))}
         </div>
-      )}
+      </div>
 
-      {/* Indicador de auto-play */}
-      {!isPaused && units.length > itemsPerPage && (
-        <div className="flex items-center justify-center gap-2 mt-4">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full text-xs text-slate-600">
-            <div className="w-2 h-2 bg-[#47B4D8] rounded-full animate-pulse" />
-            <span>Rotación automática</span>
-          </div>
+      {/* Indicador de movimiento continuo */}
+      <div className="flex items-center justify-center gap-2 mt-6">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full text-xs text-slate-600">
+          <div className="w-2 h-2 bg-[#47B4D8] rounded-full animate-pulse" />
+          <span>Toque una tarjeta para ver detalles</span>
         </div>
-      )}
+      </div>
+
+      <style>{`
+        @keyframes scroll-continuous {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-25%);
+          }
+        }
+
+        .mask-gradient {
+          -webkit-mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            black 5%,
+            black 95%,
+            transparent 100%
+          );
+          mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            black 5%,
+            black 95%,
+            transparent 100%
+          );
+        }
+      `}</style>
     </div>
-  );
+  )
 }
