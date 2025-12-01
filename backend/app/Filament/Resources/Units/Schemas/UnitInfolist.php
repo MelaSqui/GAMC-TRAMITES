@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Units\Schemas;
 
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\ImageEntry;
-use Filament\Schemas\Components\TextEntry;
+use Filament\Infolists\Components\ImageEntry; 
+use Filament\Infolists\Components\TextEntry;  
 
 class UnitInfolist
 {
@@ -25,7 +25,8 @@ class UnitInfolist
 
                 TextEntry::make('phones')
                     ->label('Teléfonos')
-                    ->formatState(fn ($state) => is_array($state) ? implode(', ', $state) : ($state ?? '')),
+                    // Corregido: Ahora se pasan dos argumentos ($state y $record)
+                    ->formatState(fn ($state, $record) => is_array($state) ? implode(', ', $state) : ($state ?? '')),
 
                 TextEntry::make('internal_phone')->label('Interno'),
                 TextEntry::make('website_url')->label('Página web'),

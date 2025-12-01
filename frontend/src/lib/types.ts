@@ -1,25 +1,15 @@
 export type Unit = {
   id: number | string;
   name: string;
-
-  // Texto
+  code_prefix?: string | null;
   description?: string | null;
-
-  // Contacto (responsable)
   contact?: string | null;
-
-  // Ubicación y teléfonos
   address?: string | null;
   phones?: string | null;
-
-  // Web e imagen
   website?: string | null;
   cover_url?: string | null;
-
-  // Nivel administrativo opcional
   nivel?: string | null;
 };
-
 
 export type Tramite = {
   id: number;
@@ -30,8 +20,21 @@ export type Tramite = {
   description?: string | null;
   requirements_html?: string | null;
   steps_html?: string | null;
-  normativas_html?: string | null;  // si decides mostrarlo después
+  normativas_html?: string | null;
   keywords?: string | null;
   estimated_time?: string | null;
   cost?: number | null;
+  is_active?: boolean;
+  is_featured?: boolean;  // ✅ NUEVO: Para favoritos
+};
+
+// ✅ NUEVO: Respuesta paginada
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
 };

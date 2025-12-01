@@ -22,11 +22,9 @@ class TramiteForm
                         ->options(function () {
                             $user = Auth::user();
                             if ($user && method_exists($user, 'isFuncionario') && $user->isFuncionario()) {
-                                // Sólo unidades asignadas al funcionario
-                                $ids = $user->units()->pluck('units.id'); // <= esto ejecuta 1 query simple
+                                $ids = $user->units()->pluck('units.id');
                                 return Unit::whereIn('id', $ids)->pluck('name', 'id');
                             }
-                            // Super admin: todas
                             return Unit::pluck('name', 'id');
                         })
                         ->required()
@@ -53,7 +51,7 @@ class TramiteForm
                 ])
                 ->columns(2),
 
-            // Requisitos — RichEditor sin “image” ni adjuntos (para descartar la causa)
+            // Requisitos
             Section::make('Requisitos del trámite')
                 ->description('Incluye documentos o condiciones necesarias. Usa listas y formato.')
                 ->schema([
@@ -65,13 +63,12 @@ class TramiteForm
                             'link', 'h2', 'h3', 'codeBlock',
                             'undo', 'redo',
                         ])
-                        // ->attachFiles()  // ← Desactivado por ahora para evitar inicializaciones pesadas
                         ->placeholder('Ej.: Presentar fotocopia de CI, croquis del inmueble...')
                         ->columnSpanFull()
                         ->required(),
                 ]),
 
-            // Pasos — igual que requisitos
+            // Pasos
             Section::make('Procedimiento o pasos')
                 ->description('Describe el paso a paso del trámite. Usa listas numeradas o viñetas.')
                 ->schema([
@@ -83,12 +80,12 @@ class TramiteForm
                             'link', 'h2', 'h3', 'codeBlock',
                             'undo', 'redo',
                         ])
-                        // ->attachFiles()  // ← Desactivado por ahora
                         ->placeholder('Ej.: 1) Llenar formulario. 2) Presentar documentos...')
                         ->columnSpanFull()
                         ->required(),
                 ]),
-            // Normativas — igual que requisitos
+
+            // Normativas
             Section::make('Normativas asociadas')
                 ->description('Leyes, decretos, reglamentos u otras normativas relacionadas con este trámite.')
                 ->schema([
@@ -100,7 +97,6 @@ class TramiteForm
                             'link', 'h2', 'h3', 'codeBlock',
                             'undo', 'redo',
                         ])
-                        // ->attachFiles()  // ← Desactivado por ahora
                         ->placeholder('Ej.: Ley N° 1234, Decreto N° 5678...')
                         ->columnSpanFull(),
                 ]),
@@ -116,16 +112,14 @@ class TramiteForm
                         ->helperText('Escribe términos que ayuden a encontrar este trámite.')
                         ->afterStateHydrated(function ($component, $state, $record) {
                             if ($record) {
-                                // Cargamos el array desde el accessor del modelo
                                 $component->state($record->keywords_array);
                             }
                         })
                         ->dehydrateStateUsing(function ($state, $record) {
-                            // Guardamos como CSV usando el mutator del modelo
                             if ($record) {
                                 $record->keywords_array = $state ?? [];
                             }
-                            return null; // evita que Filament lo escriba directo
+                            return null;
                         })
                         ->dehydrated(false)
                         ->columnSpanFull(),
@@ -150,6 +144,21 @@ class TramiteForm
                         ->default(true),
                 ])
                 ->columns(3),
+
+            // ✅ NUEVO: Sección de Favoritos (solo para super_admin)
+            Section::make('Destacar trámite')
+                ->description('Los trámites destacados aparecen en la sección de favoritos del portal público.')
+                ->schema([
+                    Forms\Components\Toggle::make('is_featured')
+                        ->label('⭐ Marcar como favorito')
+                        ->helperText('Este trámite aparecerá en la sección de favoritos del portal.')
+                        ->default(false)
+                        ->onColor('warning')
+                        ->offColor('gray'),
+                ])
+                ->visible(fn () => Auth::user()?->isSuperAdmin() ?? false)
+                ->collapsed(),
+
         ])->columns(1);
     }
 }

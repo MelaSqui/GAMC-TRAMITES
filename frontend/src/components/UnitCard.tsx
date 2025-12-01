@@ -20,6 +20,15 @@ export default function UnitCard({ unit, onOpen }: Props) {
     .toUpperCase()
     .slice(0, 2);
 
+  // =============================
+  // 🎨 Colores institucionales (oscuro → claro)
+  // =============================
+  const bgColors = ['#341A67', '#584291', '#009ED0'];
+
+  // Si el ID no es numérico, cae en el primero
+  const index = Number(unit.id);
+  const bgColor = isNaN(index) ? bgColors[0] : bgColors[index % 3];
+
   return (
     <article className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden">
       
@@ -28,22 +37,22 @@ export default function UnitCard({ unit, onOpen }: Props) {
         {unit.cover_url ? (
           
           // =============================
-          // NUEVA VERSIÓN: PNG TRANSPARENTE + FONDO MORADO (LOGO MÁS PEQUEÑO)
+          // PNG TRANSPARENTE + FONDO INSTITUCIONAL DINÁMICO
           // =============================
-          <div className="h-full w-full bg-[#341A67] flex items-center justify-center relative overflow-hidden">
+          <div
+            className="h-full w-full flex items-center justify-center relative overflow-hidden"
+            style={{ backgroundColor: bgColor }}
+          >
 
             <img
               src={unit.cover_url}
               alt={unit.name}
-              className="max-w-[200px] h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+              className="max-w-[150px] h-auto object-contain group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
             />
-
-            {/* Overlay suave */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent pointer-events-none"></div>
           </div>
 
         ) : (

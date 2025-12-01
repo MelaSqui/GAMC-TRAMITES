@@ -12,22 +12,22 @@
   width: 100%;
   height: 48px;
   padding: 0 16px 0 48px;
-  border: 2px solid #E6E8EF;
+  border: 2px solid #e6e8ef;
   border-radius: 12px;
   font-size: 15px;
-  color: #0F172A;
+  color: #0f172a;
   background: white;
   transition: all 0.2s ease;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #4B2C8E;
+  border-color: #4b2c8e;
   box-shadow: 0 0 0 3px rgba(75, 44, 142, 0.1);
 }
 
 .search-input::placeholder {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .search-input-icon {
@@ -35,7 +35,7 @@
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #94A3B8;
+  color: #94a3b8;
   pointer-events: none;
   width: 20px;
   height: 20px;
@@ -57,7 +57,7 @@
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #E6E8EF;
+  border: 1px solid #e6e8ef;
   padding: 16px;
   margin: -32px auto 32px;
   position: relative;
@@ -85,12 +85,12 @@
 .popular-searches {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid #F1F5F9;
+  border-top: 1px solid #f1f5f9;
 }
 
 .popular-searches-label {
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -108,16 +108,16 @@
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  background: #F8FAFC;
+  background: #f8fafc;
   color: #475569;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .popular-tag:hover {
-  background: #F1F5F9;
-  border-color: #CBD5E1;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
   transform: translateY(-1px);
 }
 
@@ -135,19 +135,77 @@
   font-size: 14px;
   font-weight: 600;
   background: white;
-  color: #0F172A;
-  border: 2px solid #E6E8EF;
+  color: #0f172a;
+  border: 2px solid #e6e8ef;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .filters-button:hover {
-  background: #F5F7FB;
-  border-color: #CBD5E1;
+  background: #f5f7fb;
+  border-color: #cbd5e1;
 }
 
 .filters-button svg {
   width: 18px;
   height: 18px;
+}
+
+/* Improved responsive search input */
+@media (max-width: 640px) {
+  .search-input-wrapper {
+    margin-bottom: 8px;
+  }
+
+  .search-input {
+    height: 40px;
+    padding: 0 12px 0 40px;
+    font-size: 14px;
+  }
+
+  .search-input-icon {
+    left: 12px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .search-input-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .search-container {
+    padding: 12px;
+    margin: -24px auto 24px;
+    border-radius: 12px;
+  }
+
+  .popular-searches {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .popular-tag {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  .filters-button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 640px) {
+  .search-input {
+    height: 44px;
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .search-input {
+    height: 48px;
+  }
 }

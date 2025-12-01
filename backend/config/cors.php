@@ -12,6 +12,8 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'http://127.0.0.1:5173',
+        'http://localhost:8042',      // ← AGREGAR
+        'http://127.0.0.1:8042',      // ← AGREGAR
         // Agrega aquí tu dominio en producción, p. ej.:
         // 'https://portal.gamc.gob.bo',
     ],

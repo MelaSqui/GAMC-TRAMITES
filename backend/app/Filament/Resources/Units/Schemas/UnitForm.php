@@ -100,10 +100,10 @@ class UnitForm
                         ->maxLength(255)
                         ->columnSpanFull(),
 
-                    Forms\Components\TagsInput::make('phones')
+                    Forms\Components\TextInput::make('phones')
                         ->label('Teléfonos')
-                        ->placeholder('Agrega teléfonos...')
-                        ->helperText('Ingresa cada teléfono y presiona Enter para agregar más'),
+                        ->placeholder('Ej.: 4-4258000, 4-4258001')
+                        ->helperText('Separa múltiples teléfonos con comas'),
 
                     Forms\Components\TextInput::make('website_url')
                         ->label('Página web')
@@ -126,7 +126,7 @@ class UnitForm
                         ->disk('public')
                         ->maxSize(4096)
                         ->imageEditor()
-                        ->helperText('Formatos: PNG. Tamaño recomendado panorámico. Máx. 4MB.'),
+                        ->helperText('Formatos: JPG/PNG. Tamaño recomendado panorámico. Máx. 4MB.'),
                 ]),
         ])
         ->columns(1);

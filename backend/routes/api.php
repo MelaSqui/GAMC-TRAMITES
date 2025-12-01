@@ -22,5 +22,6 @@ Route::prefix('v1/public')->group(function () {
 
     // === TRÁMITES ===
     Route::get('/tramites', [TramiteController::class, 'index']);
+    Route::get('/tramites/featured', [TramiteController::class, 'featured']); // ✅ NUEVO: Favoritos
     Route::get('/tramites/{tramite}', [TramiteController::class, 'show'])->whereNumber('tramite');
 });

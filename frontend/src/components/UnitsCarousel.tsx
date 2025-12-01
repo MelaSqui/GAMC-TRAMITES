@@ -10,22 +10,14 @@ type Props = {
   scrollSpeed?: number
 }
 
-export default function UnitsCarousel({
-  units,
-  onOpenUnit,
-  scrollSpeed = 50,
-}: Props) {
-  const [isPaused, setIsPaused] = useState(false)
+export default function UnitsCarousel({ units, onOpenUnit, scrollSpeed = 800 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [animationDuration, setAnimationDuration] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
 
-  // Validación defensiva
   const safeUnits = Array.isArray(units) ? units : []
-  
-  // Duplicar items
   const extendedUnits = [...safeUnits, ...safeUnits, ...safeUnits, ...safeUnits]
 
-  // Calcular la duración de la animación
   useEffect(() => {
     if (trackRef.current && safeUnits.length > 0) {
       const totalWidth = trackRef.current.scrollWidth / 4
@@ -34,46 +26,44 @@ export default function UnitsCarousel({
     }
   }, [safeUnits.length, scrollSpeed])
 
-  // Si no hay unidades, no renderizar nada
+  const handleCardClick = (unit: Unit) => {
+    onOpenUnit(unit)
+  }
+
   if (safeUnits.length === 0) {
     return null
   }
 
-  // Si hay 3 o menos unidades, mostrar grid simple
   if (safeUnits.length <= 3) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
         {safeUnits.map((unit) => (
-          <UnitCard key={unit.id} unit={unit} onOpen={() => onOpenUnit(unit)} />
+          <div key={unit.id} className="transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
+            <UnitCard unit={unit} onOpen={() => onOpenUnit(unit)} />
+          </div>
         ))}
       </div>
     )
   }
 
-  // ✅ NUEVA FUNCIÓN: Manejar click sin pausar el carrusel
-  const handleCardClick = (unit: Unit) => {
-    // Abrir modal sin pausar la animación
-    onOpenUnit(unit)
-  }
-
   return (
     <div className="relative w-full">
-      {/* ❌ REMOVIDO: onMouseEnter y onMouseLeave para que NO se pause */}
-      <div className="overflow-hidden mask-gradient">
+      <div className="overflow-hidden mask-gradient-units">
         <div
           ref={trackRef}
-          className="flex gap-6 py-2"
+          className={`flex gap-6 py-2 carousel-track-units ${isPaused ? "paused" : ""}`}
           style={{
-            // ✅ SIEMPRE animando, sin pausa
-            animation: `scroll-continuous ${animationDuration}s linear infinite`,
+            animationDuration: `${animationDuration}s`,
           }}
         >
           {extendedUnits.map((unit, index) => (
             <div
               key={`${unit.id}-${index}`}
-              className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] min-w-[320px] max-w-[420px]"
+              className="flex-shrink-0 w-[calc((100vw-8rem)/3)] max-w-[480px] min-w-[320px] transform transition-all hover:drop-shadow-2xl"
               onClick={() => handleCardClick(unit)}
-              style={{ cursor: 'pointer' }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              style={{ cursor: "pointer" }}
             >
               <UnitCard unit={unit} onOpen={() => handleCardClick(unit)} />
             </div>
@@ -81,16 +71,18 @@ export default function UnitsCarousel({
         </div>
       </div>
 
-      {/* Indicador de movimiento continuo */}
-      <div className="flex items-center justify-center gap-2 mt-6">
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full text-xs text-slate-600">
-          <div className="w-2 h-2 bg-[#47B4D8] rounded-full animate-pulse" />
-          <span>Toque una tarjeta para ver detalles</span>
-        </div>
-      </div>
+      
 
       <style>{`
-        @keyframes scroll-continuous {
+        .carousel-track-units {
+          animation: scroll-units linear infinite;
+        }
+
+        .carousel-track-units.paused {
+          animation-play-state: paused;
+        }
+
+        @keyframes scroll-units {
           0% {
             transform: translateX(0);
           }
@@ -99,7 +91,7 @@ export default function UnitsCarousel({
           }
         }
 
-        .mask-gradient {
+        .mask-gradient-units {
           -webkit-mask-image: linear-gradient(
             to right,
             transparent 0%,

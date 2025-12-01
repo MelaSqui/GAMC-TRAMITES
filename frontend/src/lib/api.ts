@@ -1,12 +1,10 @@
 // src/lib/api.ts
-import type { Unit, Tramite } from './types';
+import type { Unit, Tramite, PaginatedResponse } from './types';
 
 const BASE =
   (import.meta.env.VITE_API_BASE as string)?.replace(/\/$/, '') ||
   'http://127.0.0.1:8000/api/v1/public';
 
-// Si NO tienes el endpoint /summary en tu backend, déjalo en false (default).
-// Para habilitarlo, agrega en tu .env del frontend: VITE_API_HAS_SUMMARY=true
 const HAS_SUMMARY = String(import.meta.env.VITE_API_HAS_SUMMARY ?? 'false') === 'true';
 
 /* ----------------------------- Helpers ----------------------------- */
@@ -46,9 +44,9 @@ function qs(params?: Record<string, string | number | undefined | null>) {
 }
 
 /* ------------------------------- API ------------------------------- */
+
 /** Resumen para el hero: { tramites, units } */
 export async function fetchSummary(): Promise<{ tramites: number; units: number }> {
-  // Evita 404: solo llamamos /summary si está habilitado en el .env
   if (HAS_SUMMARY) {
     try {
       const j = await fetchJson<any>(`${BASE}/summary`);
@@ -61,7 +59,6 @@ export async function fetchSummary(): Promise<{ tramites: number; units: number 
     }
   }
 
-  // Plan B: contar resultados de /tramites y /units
   try {
     const [t, u] = await Promise.all([
       fetchJson<any>(`${BASE}/tramites`),
@@ -76,16 +73,58 @@ export async function fetchSummary(): Promise<{ tramites: number; units: number 
   }
 }
 
-/** Lista global de trámites (con búsqueda o filtro por unidad si tu backend lo soporta) */
+/** Lista global de trámites (sin paginación) */
 export async function fetchTramites(params?: {
   q?: string;
-  unitId?: number | string; // si tu endpoint usa unit_id, cambia la key abajo
+  unitId?: number | string;
 }): Promise<Tramite[]> {
   const url = `${BASE}/tramites${qs({
     q: params?.q,
-    // ajusta el nombre del parámetro si tu backend espera 'unit_id'
-    unitId: params?.unitId as any,
+    unit: params?.unitId as any,
   })}`;
+  const json = await fetchJson<any>(url);
+  return unwrapList<Tramite>(json);
+}
+
+/** ✅ NUEVO: Lista de trámites con paginación */
+export async function fetchTramitesPaginated(params?: {
+  q?: string;
+  unitId?: number | string;
+  page?: number;
+  perPage?: number;
+}): Promise<PaginatedResponse<Tramite>> {
+  const url = `${BASE}/tramites${qs({
+    q: params?.q,
+    unit: params?.unitId as any,
+    page: params?.page,
+    per_page: params?.perPage,
+  })}`;
+  const json = await fetchJson<any>(url);
+  
+  // Si tiene meta, es paginado
+  if (json.meta) {
+    return {
+      data: unwrapList<Tramite>(json),
+      meta: json.meta,
+    };
+  }
+  
+  // Si no tiene meta, simular respuesta paginada
+  const data = unwrapList<Tramite>(json);
+  return {
+    data,
+    meta: {
+      current_page: 1,
+      last_page: 1,
+      per_page: data.length,
+      total: data.length,
+    },
+  };
+}
+
+/** ✅ NUEVO: Lista de trámites favoritos/destacados */
+export async function fetchFeaturedTramites(): Promise<Tramite[]> {
+  const url = `${BASE}/tramites/featured`;
   const json = await fetchJson<any>(url);
   return unwrapList<Tramite>(json);
 }
@@ -125,6 +164,8 @@ export async function getTramite(id: number | string): Promise<Tramite> {
 const API = {
   fetchSummary,
   fetchTramites,
+  fetchTramitesPaginated,
+  fetchFeaturedTramites,
   getUnits,
   getUnit,
   listTramitesByUnit,
@@ -132,4 +173,4 @@ const API = {
 };
 
 export default API;
-export type { Unit, Tramite };
+export type { Unit, Tramite, PaginatedResponse };

@@ -12,47 +12,116 @@ class Tramite extends Model
 
     protected $fillable = [
         'unit_id',
-        'code',             // único (ej. ZN0001)
+        'code',
         'title',
         'description',
-
-        // Campos antiguos (compatibilidad)
-        'requirements',     // JSON
-        'steps',            // JSON
-
-        // Nuevos campos RichEditor + keywords (CSV)
-        'requirements_html', // TEXT
-        'steps_html',        // TEXT
-        'normativas_html',   // ✅ NUEVO campo
-        'keywords',          // TEXT (CSV: "vehicular, renovación")
-
+        'requirements',
+        'steps',
+        'requirements_html',
+        'steps_html',
+        'normativas_html',
+        'keywords',
         'estimated_time',
         'cost',
         'created_by',
         'is_active',
+        'is_featured',  // ✅ NUEVO: Para marcar favoritos
     ];
 
     protected $casts = [
         'requirements' => 'array',
         'steps'        => 'array',
         'is_active'    => 'boolean',
+        'is_featured'  => 'boolean',  // ✅ NUEVO
         'cost'         => 'decimal:2',
     ];
 
-    /** Unidad dueña del trámite */
+    // ============================
+    // Auto-generación de código
+    // ============================
+
+    protected static function booted(): void
+    {
+        static::creating(function (Tramite $tramite) {
+            if (empty($tramite->code) && $tramite->unit_id) {
+                $tramite->code = self::generateCode($tramite->unit_id);
+            }
+        });
+    }
+
+    public static function generateCode(int $unitId): string
+    {
+        $unit = Unit::find($unitId);
+        $prefix = $unit?->code_prefix ?? 'TR';
+
+        $lastTramite = self::where('code', 'LIKE', $prefix . '%')
+            ->orderByRaw("CAST(SUBSTRING(code FROM '[0-9]+$') AS INTEGER) DESC")
+            ->first();
+
+        if ($lastTramite && preg_match('/(\d+)$/', $lastTramite->code, $matches)) {
+            $nextNumber = (int) $matches[1] + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+    // ============================
+    // Relaciones
+    // ============================
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class);
     }
 
-    /** Usuario creador (opcional) */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    // 🔥 ELIMINAMOS la relación antigua con normativas (pivot)
-    // ❌ public function normativas(): BelongsToMany { ... }
+    // ============================
+    // Scopes
+    // ============================
+
+    /**
+     * Scope para obtener solo favoritos
+     */
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
+    /**
+     * Scope para obtener solo activos
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope de búsqueda
+     */
+    public function scopeSearch($query, ?string $q)
+    {
+        $q = trim((string) $q);
+        if ($q === '') {
+            return $query;
+        }
+
+        $like = "%{$q}%";
+
+        return $query->where(function ($sub) use ($like) {
+            $sub->where('title', 'ILIKE', $like)
+                ->orWhere('description', 'ILIKE', $like)
+                ->orWhere('requirements_html', 'ILIKE', $like)
+                ->orWhere('steps_html', 'ILIKE', $like)
+                ->orWhere('normativas_html', 'ILIKE', $like)
+                ->orWhere('keywords', 'ILIKE', $like);
+        });
+    }
 
     // ============================
     // Helpers para Palabras Clave
@@ -79,31 +148,8 @@ class Tramite extends Model
             ->implode(',');
     }
 
-    // ============================
-    // Scope de búsqueda mejorado
-    // ============================
-
-    public function scopeSearch($query, ?string $q)
-    {
-        $q = trim((string) $q);
-        if ($q === '') {
-            return $query;
-        }
-
-        $like = "%{$q}%";
-
-        return $query->where(function ($sub) use ($like) {
-            $sub->where('title', 'ILIKE', $like)
-                ->orWhere('description', 'ILIKE', $like)
-                ->orWhere('requirements_html', 'ILIKE', $like)
-                ->orWhere('steps_html', 'ILIKE', $like)
-                ->orWhere('normativas_html', 'ILIKE', $like) // ✅ ahora se busca en normativas también
-                ->orWhere('keywords', 'ILIKE', $like);
-        });
-    }
-
     // ===========================================
-    // (Opcional) Compatibilidad con datos antiguos
+    // Compatibilidad con datos antiguos
     // ===========================================
 
     public function getRequirementsHtmlFromJsonAttribute(): ?string
