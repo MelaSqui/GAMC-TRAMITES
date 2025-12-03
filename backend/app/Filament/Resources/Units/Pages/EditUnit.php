@@ -25,4 +25,14 @@ class EditUnit extends EditRecord
                 ->visible(fn () => Auth::user()?->role === 'super_admin'),
         ];
     }
+
+    /**
+     * Sobrescribe el método para redirigir a la página de índice (lista) 
+     * después de guardar o actualizar el registro.
+     */
+    protected function getRedirectUrl(): string
+    {
+        // Esto redirige al usuario a la ruta 'index' (la lista de unidades).
+        return $this->getResource()::getUrl('index');
+    }
 }

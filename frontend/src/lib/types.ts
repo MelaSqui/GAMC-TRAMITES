@@ -5,7 +5,8 @@ export type Unit = {
   description?: string | null;
   contact?: string | null;
   address?: string | null;
-  phones?: string | null;
+  phones?: string[];
+  whatsapp_phone?: string | null;  //
   website?: string | null;
   cover_url?: string | null;
   nivel?: string | null;
@@ -25,10 +26,10 @@ export type Tramite = {
   estimated_time?: string | null;
   cost?: number | null;
   is_active?: boolean;
-  is_featured?: boolean;  // ✅ NUEVO: Para favoritos
+  is_featured?: boolean;
 };
 
-// ✅ NUEVO: Respuesta paginada
+// Respuesta paginada
 export type PaginatedResponse<T> = {
   data: T[];
   meta: {

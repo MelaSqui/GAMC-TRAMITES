@@ -39,6 +39,7 @@ class UnitController extends Controller
                 'contact_name as contact',
                 'address',
                 'phones',
+                'whatsapp_phone',  // ✅ AGREGADO
                 'website_url as website',
                 'cover_url',
             ])
@@ -61,9 +62,10 @@ class UnitController extends Controller
             'code_prefix'=> $unit->code_prefix,
             'description'=> $unit->description,
             'level'      => $unit->level,
-            'contact'    => $unit->contact_name,
+            'contact'    => $unit->contact_name,  // ✅ CORREGIDO (estaba "contservact_name")
             'address'    => $unit->address,
             'phones'     => $unit->phones,
+            'whatsapp_phone'=> $unit->whatsapp_phone,  // ✅ YA ESTABA
             'website'    => $unit->website_url,
             'cover_url'  => $unit->cover_url,
         ];
@@ -109,6 +111,7 @@ class UnitController extends Controller
             'contact'    => $unit->contact_name,
             'address'    => $unit->address,
             'phones'     => $unit->phones,
+            'whatsapp_phone'=> $unit->whatsapp_phone,  // ✅ AGREGADO
             'website'    => $unit->website_url,
             'cover_url'  => $unit->cover_url,
         ]);
@@ -159,6 +162,7 @@ class UnitController extends Controller
             'contact'     => $u->contact,
             'address'     => $u->address,
             'phones'      => $phones,
+            'whatsapp_phone' => $u->whatsapp_phone ?? null,  // ✅ AGREGADO
             'website'     => $u->website,
             'cover_url'   => $coverUrl,
         ];

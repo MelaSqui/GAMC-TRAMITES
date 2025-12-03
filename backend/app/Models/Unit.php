@@ -20,6 +20,7 @@ class Unit extends Model
         'contact_name',
         'address',
         'phones',
+        'whatsapp_phone',  
         'internal_phone',
         'website_url',
         'cover_url',
