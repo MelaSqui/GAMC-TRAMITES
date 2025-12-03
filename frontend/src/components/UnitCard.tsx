@@ -60,10 +60,10 @@ export default function UnitCard({ unit, onOpen }: Props) {
   const bgColor = isNaN(index) ? bgColors[0] : bgColors[index % 3];
 
   return (
-    <article className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden">
-      
+    <article className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden h-full flex flex-col">
+
       {/* Imagen / Fondo */}
-      <div className="relative h-56 w-full overflow-hidden">
+      <div className="relative h-48 w-full overflow-hidden flex-shrink-0">
         {unit.cover_url ? (
           <div className="h-full w-full flex items-center justify-center relative overflow-hidden"
             style={{ backgroundColor: bgColor }}>
@@ -94,10 +94,10 @@ export default function UnitCard({ unit, onOpen }: Props) {
       </div>
 
       {/* Contenido */}
-      <div className="p-6 flex flex-col gap-4">
-        
+      <div className="p-6 flex flex-col gap-4 flex-1">
+
         {/* Título y descripción */}
-        <div>
+        <div className="flex-shrink-0">
           <h3 className="text-xl font-bold text-slate-900 leading-tight mb-2 group-hover:text-primary-600 transition-colors">
             {unit.name}
           </h3>
@@ -107,7 +107,7 @@ export default function UnitCard({ unit, onOpen }: Props) {
         </div>
 
         {/* Información de contacto */}
-        <div className="flex flex-col gap-3 py-3 border-t border-slate-100">
+        <div className="flex flex-col gap-3 py-3 border-t border-slate-100 flex-1">
           
           {/* Ubicación */}
           {unit.address && (
@@ -188,22 +188,24 @@ export default function UnitCard({ unit, onOpen }: Props) {
         </div>
 
         {/* Botón Ver Detalles */}
-        <button
-          type="button"
-          onClick={onOpen}
-          className="mt-2 w-full flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-xl transition-all group/btn border border-primary-200"
-        >
-          <span>Ver detalles</span>
-          <svg 
-            className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-            strokeWidth={2.5}
+        <div className="mt-auto pt-2 flex-shrink-0">
+          <button
+            type="button"
+            onClick={onOpen}
+            className="w-full flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-xl transition-all group/btn border border-primary-200"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+            <span>Ver detalles</span>
+            <svg
+              className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </article>
   );

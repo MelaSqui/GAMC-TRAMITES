@@ -99,7 +99,7 @@ export default function HomePage() {
     >
       {/* PREMIUM HERO - Enhanced with animations */}
       <section
-        className="relative overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24 font-poppins w-full"
+        className="relative overflow-hidden py-8 sm:py-10 md:py-12 lg:py-14 font-poppins w-full"
         style={{
           background: `linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryHover} 100%)`,
         }}
@@ -129,27 +129,24 @@ export default function HomePage() {
         </div>
 
         <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col items-center text-center space-y-6 sm:space-y-8">
+          <div className="flex flex-col items-center text-center space-y-4 sm:space-y-5">
             <div className="flex items-center justify-center animate-in fade-in zoom-in duration-700">
               <img
                 src="/images/Logo_cocha_blanco.png"
                 alt="Logo Alcaldía"
-                className="w-32 h-32 sm:w-48 sm:h-48 lg:w-56 lg:h-56 object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
+                className="w-28 h-28 sm:w-40 sm:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
               />
             </div>
 
-            <div className="w-full space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              <h1 
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight drop-shadow-lg"
-                style={{ color: '#E8DCFF' }}
-              >
+            <div className="w-full space-y-2 sm:space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
                 Guía de Trámites y Servicios
               </h1>
-              <p 
-                className="text-base sm:text-lg font-medium mb-2"
-                style={{ color: '#D8C7F7' }}
-              >
+              <p className="text-base text-white/90 font-medium mb-1">
                 Alcaldía de Cochabamba
+              </p>
+              <p className="text-xs sm:text-sm text-white/70 italic">
+                "Al servicio de la ciudadanía cochabambina"
               </p>
             </div>
           </div>
@@ -159,7 +156,7 @@ export default function HomePage() {
       {/* ✅ Búsqueda - z-10 para que quede debajo del modal (z-9999) */}
       <section className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 -mt-6 sm:-mt-8 md:-mt-10 mb-8 sm:mb-10 md:mb-12 relative z-10">
         <div className="bg-white rounded-3xl sm:rounded-4xl shadow-2xl border border-slate-200/80 p-5 sm:p-6 md:p-8 backdrop-blur-sm hover:shadow-3xl transition-all duration-300">
-          <div className="flex flex-col gap-4 sm:gap-5 mb-5 sm:mb-6">
+          <div className="flex flex-row gap-3 items-center mb-5 sm:mb-6">
             <div className="flex-1">
               <SearchInput
                 value={query}
@@ -174,37 +171,35 @@ export default function HomePage() {
 
             <button
               onClick={() => setViewMode(viewMode === "tramites" ? "unidades" : "tramites")}
-              className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-4 text-sm sm:text-base font-semibold text-white rounded-xl sm:rounded-2xl transition-all shadow-lg hover:shadow-xl w-full sm:w-auto transform hover:scale-105 active:scale-95"
+              className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white rounded-xl whitespace-nowrap transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
               style={{
                 backgroundColor: BRAND_COLORS.primary,
                 background: `linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryHover} 100%)`,
               }}
             >
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                 />
               </svg>
-              <span>{viewMode === "tramites" ? "Ver unidades" : "Ver trámites"}</span>
+              <span className="hidden sm:inline">{viewMode === "tramites" ? "Ver unidades" : "Ver trámites"}</span>
+              <span className="sm:hidden">{viewMode === "tramites" ? "Unidades" : "Trámites"}</span>
             </button>
           </div>
 
           {!query && viewMode === "tramites" && (
-            <div className="pt-4 sm:pt-5 border-t border-slate-200">
-              <p className="text-xs sm:text-sm text-slate-600 font-bold mb-3 sm:mb-4 uppercase tracking-wide">
+            <div className="pt-3 border-t border-slate-100">
+              <p className="text-[10px] sm:text-xs text-slate-500 font-medium mb-2 uppercase tracking-wide">
                 Búsquedas populares:
               </p>
-              <div className="flex flex-wrap gap-2 sm:gap-3">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {popularSearches.map((tag) => (
                   <button
                     key={tag}
                     onClick={() => setQuery(tag)}
-                    className="px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white rounded-full transition-all shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
-                    style={{
-                      background: `linear-gradient(135deg, ${BRAND_COLORS.accent} 0%, ${BRAND_COLORS.accentHover} 100%)`,
-                    }}
+                    className="px-3 py-1.5 text-[11px] sm:text-xs font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 rounded-full transition-all hover:shadow-sm"
                   >
                     {tag}
                   </button>

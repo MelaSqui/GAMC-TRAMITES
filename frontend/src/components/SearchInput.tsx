@@ -12,7 +12,7 @@ export default function SearchInput({
   return (
     <div className="relative group">
       <input
-        className="w-full h-12 sm:h-14 lg:h-16 pl-12 sm:pl-14 pr-4 text-sm sm:text-base lg:text-lg text-slate-900 placeholder-slate-400 bg-white border-2 border-slate-200 rounded-2xl sm:rounded-3xl focus:outline-none focus:border-[#341A67] focus:ring-4 focus:ring-[#341A67]/15 transition-all duration-300 shadow-md hover:shadow-lg focus:shadow-xl focus:scale-[1.02] font-medium"
+        className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-4 text-sm sm:text-base text-slate-900 placeholder-slate-400 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[#341A67] focus:ring-4 focus:ring-[#341A67]/15 transition-all duration-300 shadow-md hover:shadow-lg focus:shadow-xl font-medium"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}

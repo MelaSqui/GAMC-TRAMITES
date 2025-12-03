@@ -10,21 +10,43 @@ type Props = {
   scrollSpeed?: number
 }
 
-export default function UnitsCarousel({ units, onOpenUnit, scrollSpeed = 800 }: Props) {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [animationDuration, setAnimationDuration] = useState(0)
+export default function UnitsCarousel({ units, onOpenUnit, scrollSpeed = 30 }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
+  const animationFrameRef = useRef<number>()
 
   const safeUnits = Array.isArray(units) ? units : []
-  const extendedUnits = [...safeUnits, ...safeUnits, ...safeUnits, ...safeUnits]
+  const extendedUnits = [...safeUnits, ...safeUnits]
 
+  // Scroll infinito con requestAnimationFrame
   useEffect(() => {
-    if (trackRef.current && safeUnits.length > 0) {
-      const totalWidth = trackRef.current.scrollWidth / 4
-      const duration = totalWidth / scrollSpeed
-      setAnimationDuration(duration)
+    if (!containerRef.current || safeUnits.length === 0) return
+
+    const container = containerRef.current
+    const cardWidth = 380 + 24 // ancho aproximado de card + gap
+    const totalWidth = cardWidth * safeUnits.length
+
+    const scroll = () => {
+      if (!isPaused && container) {
+        // Incrementar la posición actual del scroll
+        container.scrollLeft += scrollSpeed / 60 // 60fps
+
+        // Cuando llegamos al final del primer conjunto, reseteamos sin que se note
+        if (container.scrollLeft >= totalWidth) {
+          container.scrollLeft = 0
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(scroll)
     }
-  }, [safeUnits.length, scrollSpeed])
+
+    animationFrameRef.current = requestAnimationFrame(scroll)
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
+  }, [safeUnits.length, scrollSpeed, isPaused])
 
   const handleCardClick = (unit: Unit) => {
     onOpenUnit(unit)
@@ -48,22 +70,19 @@ export default function UnitsCarousel({ units, onOpenUnit, scrollSpeed = 800 }: 
 
   return (
     <div className="relative w-full">
-      <div className="overflow-hidden mask-gradient-units">
-        <div
-          ref={trackRef}
-          className={`flex gap-6 py-2 carousel-track-units ${isPaused ? "paused" : ""}`}
-          style={{
-            animationDuration: `${animationDuration}s`,
-          }}
-        >
+      <div
+        ref={containerRef}
+        className="overflow-x-scroll scrollbar-hide mask-gradient-units"
+        style={{ scrollBehavior: 'auto' }}
+      >
+        <div className="flex gap-6 py-2">
           {extendedUnits.map((unit, index) => (
             <div
               key={`${unit.id}-${index}`}
-              className="flex-shrink-0 w-[calc((100vw-8rem)/3)] max-w-[480px] min-w-[320px] transform transition-all hover:drop-shadow-2xl"
+              className="flex-shrink-0 w-[calc((100vw-8rem)/3)] max-w-[480px] min-w-[320px] transform transition-all hover:drop-shadow-2xl cursor-pointer"
               onClick={() => handleCardClick(unit)}
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
-              style={{ cursor: "pointer" }}
             >
               <UnitCard unit={unit} onOpen={() => handleCardClick(unit)} />
             </div>
@@ -71,24 +90,14 @@ export default function UnitsCarousel({ units, onOpenUnit, scrollSpeed = 800 }: 
         </div>
       </div>
 
-      
-
       <style>{`
-        .carousel-track-units {
-          animation: scroll-units linear infinite;
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
 
-        .carousel-track-units.paused {
-          animation-play-state: paused;
-        }
-
-        @keyframes scroll-units {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-25%);
-          }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
 
         .mask-gradient-units {

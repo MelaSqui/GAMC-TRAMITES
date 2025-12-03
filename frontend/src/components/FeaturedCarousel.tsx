@@ -12,27 +12,48 @@ type Props = {
 
 export default function FeaturedCarousel({
   tramites,
-  scrollSpeed = 350,
+  scrollSpeed = 30,
 }: Props) {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [animationDuration, setAnimationDuration] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
   const [selectedTramite, setSelectedTramite] = useState<Tramite | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
 
   // Validación defensiva
   const safeTramites = Array.isArray(tramites) ? tramites : []
-  
-  // Duplicar items para efecto infinito
-  const extendedTramites = [...safeTramites, ...safeTramites, ...safeTramites, ...safeTramites]
 
-  // Calcular la duración de la animación
+  // Duplicar items múltiples veces para scroll infinito verdadero
+  const extendedTramites = [...safeTramites, ...safeTramites]
+
+  // Scroll infinito con requestAnimationFrame
   useEffect(() => {
-    if (trackRef.current && safeTramites.length > 0) {
-      const totalWidth = trackRef.current.scrollWidth / 4
-      const duration = totalWidth / scrollSpeed
-      setAnimationDuration(duration)
+    if (!containerRef.current || safeTramites.length === 0) return
+
+    const container = containerRef.current
+    const cardWidth = 340 + 20 // ancho de card + gap
+    const totalWidth = cardWidth * safeTramites.length
+
+    const scroll = () => {
+      if (!isPaused && container) {
+        // Incrementar la posición actual del scroll
+        container.scrollLeft += scrollSpeed / 60 // 60fps
+
+        // Cuando llegamos al final del primer conjunto, reseteamos sin que se note
+        if (container.scrollLeft >= totalWidth) {
+          container.scrollLeft = 0
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(scroll)
     }
-  }, [safeTramites.length, scrollSpeed])
+
+    animationFrameRef.current = requestAnimationFrame(scroll)
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
+  }, [safeTramites.length, scrollSpeed, isPaused])
 
   const handleOpenTramite = (tramite: Tramite) => {
     setSelectedTramite(tramite)
@@ -100,14 +121,12 @@ export default function FeaturedCarousel({
 
         {/* Carrusel */}
         <div className="relative w-full">
-          <div className="overflow-hidden mask-gradient-featured">
-            <div
-              ref={trackRef}
-              className={`flex gap-5 py-2 carousel-track ${isPaused ? 'paused' : ''}`}
-              style={{
-                animationDuration: `${animationDuration}s`,
-              }}
-            >
+          <div
+            ref={containerRef}
+            className="overflow-x-scroll scrollbar-hide mask-gradient-featured"
+            style={{ scrollBehavior: 'auto' }}
+          >
+            <div className="flex gap-5 py-2">
               {extendedTramites.map((tramite, index) => (
                 <div
                   key={`featured-${tramite.id}-${index}`}
@@ -116,8 +135,8 @@ export default function FeaturedCarousel({
                   onMouseLeave={() => setIsPaused(false)}
                   onClick={() => handleOpenTramite(tramite)}
                 >
-                  <TramiteCard 
-                    tramite={tramite} 
+                  <TramiteCard
+                    tramite={tramite}
                   />
                 </div>
               ))}
@@ -126,21 +145,13 @@ export default function FeaturedCarousel({
         </div>
 
         <style>{`
-          .carousel-track {
-            animation: scroll-featured linear infinite;
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
           }
 
-          .carousel-track.paused {
-            animation-play-state: paused;
-          }
-
-          @keyframes scroll-featured {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-25%);
-            }
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
           }
 
           .mask-gradient-featured {

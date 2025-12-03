@@ -370,7 +370,13 @@ export default function TramiteModal({ open, onClose, tramite }: Props) {
                           <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wide">Teléfonos</p>
                           <div className="flex items-center gap-2 flex-wrap">
                             {phones.map((phone, idx) => (
-                              <p key={idx} className="text-sm text-slate-700">{phone}</p>
+                              <a
+                                key={idx}
+                                href={`tel:${phone}`}
+                                className="text-sm text-slate-700 hover:text-[#47B4D8] hover:underline cursor-pointer transition-colors"
+                              >
+                                {phone}
+                              </a>
                             ))}
                             {/* Icono de WhatsApp */}
                             {isWhatsappAvailable && (

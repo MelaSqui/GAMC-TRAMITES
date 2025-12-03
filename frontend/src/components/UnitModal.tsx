@@ -234,7 +234,17 @@ export default function UnitModal({ open, unit, onClose }: Props) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-slate-500 font-medium mb-1">Teléfono(s)</p>
-                    <p className="text-sm text-slate-900">{phones.join(' · ')}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {phones.map((phone, idx) => (
+                        <a
+                          key={idx}
+                          href={`tel:${phone}`}
+                          className="text-sm text-slate-900 hover:text-[#47B4D8] hover:underline cursor-pointer transition-colors"
+                        >
+                          {phone}
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
