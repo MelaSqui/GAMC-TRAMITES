@@ -3,13 +3,16 @@ export type Unit = {
   name: string;
   code_prefix?: string | null;
   description?: string | null;
-  contact?: string | null;
+  contact?: string | null; // Alias para compatibilidad
+  contact_name?: string | null; // Nombre real del backend
   address?: string | null;
   phones?: string[];
-  whatsapp_phone?: string | null;  //
-  website?: string | null;
+  whatsapp_phone?: string | null;
+  website?: string | null; // Alias para compatibilidad
+  website_url?: string | null; // Nombre real del backend
   cover_url?: string | null;
   nivel?: string | null;
+  level?: string | null; // Nombre real del backend
 };
 
 export type Tramite = {

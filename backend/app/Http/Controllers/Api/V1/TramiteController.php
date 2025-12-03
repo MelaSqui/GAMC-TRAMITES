@@ -19,7 +19,7 @@ class TramiteController extends Controller
         $perPage = (int) $request->query('per_page', 0); // 0 = sin paginación
 
         $query = Tramite::query()
-            ->with('unit:id,name,code_prefix,description,address,phones')  // ✅ QUITADO contact
+            ->with('unit:id,name,code_prefix,description,contact_name,address,phones,whatsapp_phone,website_url')
             ->when($unitId, fn($qry) => $qry->where('unit_id', $unitId))
             ->where('is_active', true)
             ->when($q !== '', fn($qry) => $qry->search($q))
@@ -53,7 +53,7 @@ class TramiteController extends Controller
     public function featured(Request $request)
     {
         $tramites = Tramite::query()
-            ->with('unit:id,name,code_prefix')
+            ->with('unit:id,name,code_prefix,description,contact_name,address,phones,whatsapp_phone,website_url')
             ->where('is_active', true)
             ->where('is_featured', true)
             ->orderBy('title')
@@ -68,7 +68,7 @@ class TramiteController extends Controller
      */
     public function show(Tramite $tramite)
     {
-        $tramite->load('unit:id,name,code_prefix,description,address,phones');  // ✅ QUITADO contact
+        $tramite->load('unit:id,name,code_prefix,description,contact_name,address,phones,whatsapp_phone,website_url');
 
         return response()->json([
             'data' => [

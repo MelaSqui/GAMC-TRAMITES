@@ -53,6 +53,7 @@ export default function Pagination({ currentPage, lastPage, total, perPage, onPa
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          title="Página anterior"
           className={`
             flex items-center justify-center w-10 h-10 rounded-lg transition-all
             ${
@@ -98,6 +99,7 @@ export default function Pagination({ currentPage, lastPage, total, perPage, onPa
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === lastPage}
+          title="Página siguiente"
           className={`
             flex items-center justify-center w-10 h-10 rounded-lg transition-all
             ${

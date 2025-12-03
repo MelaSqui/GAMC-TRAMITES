@@ -9,8 +9,18 @@ type Props = {
 
 // Función para limpiar y generar la URL de WhatsApp
 const getWhatsappUrl = (phone: string): string => {
-  const cleanPhone = phone.replace(/[^\d+]/g, ''); 
-  return `https://wa.me/${cleanPhone.replace('+', '')}`;
+  // Limpiar el número (eliminar espacios, guiones, etc.)
+  let cleanPhone = phone.replace(/[^\d+]/g, '');
+
+  // Si el número no tiene código de país, agregar +591 (Bolivia)
+  if (!cleanPhone.startsWith('591') && !cleanPhone.startsWith('+591')) {
+    cleanPhone = '591' + cleanPhone;
+  }
+
+  // Eliminar el símbolo + si existe (WhatsApp no lo necesita en la URL)
+  cleanPhone = cleanPhone.replace('+', '');
+
+  return `https://wa.me/${cleanPhone}`;
 };
 
 // ✅ Icono oficial de WhatsApp

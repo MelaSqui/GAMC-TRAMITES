@@ -29,6 +29,7 @@ export default function SearchInput({
       {value && (
         <button
           onClick={() => onChange("")}
+          title="Limpiar búsqueda"
           className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-600 hover:text-slate-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-110"
         >
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

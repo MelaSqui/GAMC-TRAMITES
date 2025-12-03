@@ -94,7 +94,7 @@ export default function HomePage() {
     <div
       className="min-h-screen font-poppins w-full overflow-x-hidden"
       style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: '#ffffffff',
       }}
     >
       {/* PREMIUM HERO - Enhanced with animations */}
@@ -156,7 +156,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 -mt-6 sm:-mt-8 md:-mt-10 mb-8 sm:mb-10 md:mb-12 relative z-20">
+      {/* ✅ Búsqueda - z-10 para que quede debajo del modal (z-9999) */}
+      <section className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 -mt-6 sm:-mt-8 md:-mt-10 mb-8 sm:mb-10 md:mb-12 relative z-10">
         <div className="bg-white rounded-3xl sm:rounded-4xl shadow-2xl border border-slate-200/80 p-5 sm:p-6 md:p-8 backdrop-blur-sm hover:shadow-3xl transition-all duration-300">
           <div className="flex flex-col gap-4 sm:gap-5 mb-5 sm:mb-6">
             <div className="flex-1">
@@ -214,8 +215,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ✅ Contenido principal - sin z-index alto */}
       <section className="relative w-full pb-16 sm:pb-20 md:pb-24">
-        <div className="relative z-10 w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
+        <div className="relative w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
           {viewMode === "tramites" ? (
             <>
               {featuredTramites.length > 0 && (
