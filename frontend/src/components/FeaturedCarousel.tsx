@@ -87,8 +87,9 @@ export default function FeaturedCarousel({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {safeTramites.map((tramite) => (
               <div key={tramite.id} onClick={() => handleOpenTramite(tramite)} className="cursor-pointer">
-                <TramiteCard 
-                  tramite={tramite} 
+                <TramiteCard
+                  tramite={tramite}
+                  onClick={() => handleOpenTramite(tramite)}
                 />
               </div>
             ))}
@@ -130,13 +131,13 @@ export default function FeaturedCarousel({
               {extendedTramites.map((tramite, index) => (
                 <div
                   key={`featured-${tramite.id}-${index}`}
-                  className="flex-shrink-0 w-[300px] sm:w-[320px] lg:w-[340px] cursor-pointer"
+                  className="flex-shrink-0 w-[300px] sm:w-[320px] lg:w-[340px]"
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
-                  onClick={() => handleOpenTramite(tramite)}
                 >
                   <TramiteCard
                     tramite={tramite}
+                    onClick={() => handleOpenTramite(tramite)}
                   />
                 </div>
               ))}

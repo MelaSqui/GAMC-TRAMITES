@@ -7,6 +7,7 @@ import type { Tramite, Unit } from "../lib/types"
 import TramiteCard from "../components/TramiteCard"
 import SearchInput from "../components/SearchInput"
 import Breadcrumbs from "../components/Breadcrumbs"
+import { BRAND_COLORS } from "../lib/theme-colors"
 
 export default function UnitTramitesPage() {
   const { id } = useParams<{ id: string }>()
@@ -44,43 +45,75 @@ export default function UnitTramitesPage() {
   }, [tramites, query])
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden">
-      <section className="page-header bg-gradient-to-r from-purple-700 to-purple-600">
-        <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
-          <Breadcrumbs
-            items={[
-              { label: "Inicio", to: "/" },
-              { label: "Unidades", to: "/unidades" },
-              { label: unit?.name || "Cargando..." },
-            ]}
-          />
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: '#ffffffff' }}>
+      {/* HERO SECTION - Same as Home */}
+      <section
+        className="relative overflow-hidden py-8 sm:py-10 md:py-12 lg:py-14 font-poppins w-full"
+        style={{
+          background: `linear-gradient(135deg, ${BRAND_COLORS.primary} 0%, ${BRAND_COLORS.primaryHover} 100%)`,
+        }}
+      >
+        {/* Imagen de fondo */}
+        <div
+          className="absolute inset-0 opacity-100"
+          style={{
+            backgroundImage: "url('/images/Portada_1.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center bottom",
+            backgroundAttachment: "fixed",
+          }}
+        ></div>
 
-          <div className="mt-3 sm:mt-4 md:mt-6">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-3 break-words">
-                  {unit ? unit.name : "Cargando..."}
-                </h1>
-                {unit?.description && (
-                  <p className="text-white/90 text-xs sm:text-sm md:text-base max-w-3xl line-clamp-2 sm:line-clamp-3">
-                    {unit.description.length > 200 ? unit.description.slice(0, 200) + "..." : unit.description}
-                  </p>
-                )}
-              </div>
+        {/* Overlay oscuro suave */}
+        <div className="absolute inset-0 bg-black/10"></div>
 
-              <button
-                onClick={() => navigate("/", { replace: true })}
-                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white rounded-lg hover:rounded-xl transition-all text-xs sm:text-sm font-semibold whitespace-nowrap"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Volver
-              </button>
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
+          <div
+            className="absolute -bottom-32 -left-32 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "1s" }}
+          ></div>
+          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-white/5 rounded-full blur-2xl animate-float"></div>
+        </div>
+
+        <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-10">
+          {/* Breadcrumbs */}
+          <div className="mb-4 sm:mb-6">
+            <Breadcrumbs
+              items={[
+                { label: "Inicio", to: "/" },
+                { label: "Unidades", to: "/unidades" },
+                { label: unit?.name || "Cargando..." },
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col items-center text-center space-y-4 sm:space-y-5">
+            {/* Logo */}
+            <div className="flex items-center justify-center animate-in fade-in zoom-in duration-700">
+              <img
+                src="/images/Logo_cocha_blanco.png"
+                alt="Logo Alcaldía"
+                className="w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
+              />
             </div>
 
+            {/* Unit Info */}
+            <div className="w-full space-y-2 sm:space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+                {unit ? unit.name : "Cargando..."}
+              </h1>
+              {unit?.description && (
+                <p className="text-sm sm:text-base text-white/90 font-medium max-w-3xl mx-auto">
+                  {unit.description.length > 200 ? unit.description.slice(0, 200) + "..." : unit.description}
+                </p>
+              )}
+            </div>
+
+            {/* Contact Info Cards */}
             {unit && (
-              <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+              <div className="w-full max-w-4xl mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
                 {unit.contact && (
                   <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3">
                     <div className="flex items-center gap-2">
@@ -160,8 +193,32 @@ export default function UnitTramitesPage() {
                 )}
               </div>
             )}
+
+            {/* Back button */}
+            <div className="mt-4 sm:mt-6 animate-in fade-in duration-700 delay-300">
+              <button
+                onClick={() => navigate("/", { replace: true })}
+                className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:rounded-2xl transition-all text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver al Inicio
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Add keyframes for animations */}
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+          }
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
+          }
+        `}</style>
       </section>
 
       <section className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 -mt-4 sm:-mt-5 md:-mt-6 mb-6 sm:mb-8">

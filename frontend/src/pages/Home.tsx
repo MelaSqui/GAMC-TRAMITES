@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useRef } from "react"
+import { useLocation } from "react-router-dom"
 import { fetchTramitesPaginated, fetchFeaturedTramites, getUnits } from "../lib/api"
 import type { Tramite, Unit } from "../lib/types"
 import SearchInput from "../components/SearchInput"
@@ -14,6 +15,9 @@ import Pagination from "../components/Pagination"
 import { BRAND_COLORS } from "../lib/theme-colors"
 
 export default function HomePage() {
+  const location = useLocation()
+  const tramitesSectionRef = useRef<HTMLElement>(null)
+
   const [loading, setLoading] = useState(true)
   const [featuredTramites, setFeaturedTramites] = useState<Tramite[]>([])
   const [units, setUnits] = useState<Unit[]>([])
@@ -76,6 +80,23 @@ export default function HomePage() {
   useEffect(() => {
     setCurrentPage(1)
   }, [selectedUnit, query])
+
+  // Manejar navegación desde UnitModal
+  useEffect(() => {
+    const state = location.state as any
+    if (state?.selectedUnit) {
+      setSelectedUnit(state.selectedUnit)
+      if (state.viewMode) {
+        setViewMode(state.viewMode)
+      }
+      // Hacer scroll a la sección de trámites después de un breve delay
+      setTimeout(() => {
+        tramitesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+      // Limpiar el estado de navegación
+      window.history.replaceState({}, document.title)
+    }
+  }, [location])
 
   const filteredUnits = useMemo(() => {
     if (!query.trim()) return units
@@ -211,7 +232,7 @@ export default function HomePage() {
       </section>
 
       {/* ✅ Contenido principal - sin z-index alto */}
-      <section className="relative w-full pb-16 sm:pb-20 md:pb-24">
+      <section ref={tramitesSectionRef} className="relative w-full pb-16 sm:pb-20 md:pb-24">
         <div className="relative w-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
           {viewMode === "tramites" ? (
             <>

@@ -142,7 +142,14 @@ export default function UnitModal({ open, unit, onClose }: Props) {
 
   const handleVerTramites = () => {
     onClose();
-    navigate(`/unidades/${unit.id}`, { replace: true });
+    // Navegar al home con el estado de la unidad seleccionada
+    navigate('/', {
+      state: {
+        selectedUnit: unit,
+        viewMode: 'tramites'
+      },
+      replace: true
+    });
   };
 
   return (
